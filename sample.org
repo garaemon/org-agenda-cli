@@ -1,0 +1,9 @@
+* TODO Task 1 :work:
+SCHEDULED: <2026-01-01 Thu>
+This is the first task.
+* WAITING Task 2 :private:
+DEADLINE: <2026-01-05 Mon>
+Waiting for something.
+* DONE Finished Task
+Completed yesterday.
+* TODO New Task :test:
