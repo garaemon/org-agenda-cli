@@ -1,0 +1,8 @@
+{
+  "name": "Org Agenda CLI Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {},
+  "remoteUser": "root"
+}
