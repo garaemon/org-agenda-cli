@@ -55,6 +55,9 @@ var todoListCmd = &cobra.Command{
 
 			items := parser.ParseString(string(content), file)
 			for _, item := range items {
+				// If a specific status is requested, filter by it.
+				// Otherwise, skip items without any status (i.e., non-TODO headlines)
+				// to ensure the 'todo' command only lists actual tasks.
 				if todoStatus != "" {
 					if item.Status != todoStatus {
 						continue
