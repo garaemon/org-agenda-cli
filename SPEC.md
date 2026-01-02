@@ -52,6 +52,7 @@ Manages the configuration file.
 - **Subcommands**:
     - `list`: Display current configuration (e.g., loaded Org file paths).
     - `add-path <path>`: Add an Org file path to the search/display list.
+    - `remove-path <path>`: Remove an Org file path from the search/display list.
 
 #### 4. `tags`
 Lists all unique tags across all configured Org files.
