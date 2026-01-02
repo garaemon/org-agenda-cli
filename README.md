@@ -27,6 +27,12 @@ org-agenda config add-path ~/org/work.org
 org-agenda config add-path ~/org/private.org
 ```
 
+Remove an Org file from the configuration:
+
+```bash
+org-agenda config remove-path ~/org/work.org
+```
+
 Set a default file for adding new tasks:
 
 ```bash

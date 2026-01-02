@@ -63,6 +63,45 @@ var configAddPathCmd = &cobra.Command{
 	},
 }
 
+var configRemovePathCmd = &cobra.Command{
+	Use:   "remove-path [path]",
+	Short: "Remove an Org file path from the search/display list",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		path, err := filepath.Abs(args[0])
+		if err != nil {
+			fmt.Printf("Error resolving path: %v\n", err)
+			return
+		}
+
+		orgFiles := viper.GetStringSlice("org_files")
+		newOrgFiles := []string{}
+		found := false
+		for _, f := range orgFiles {
+			if f == path {
+				found = true
+				continue
+			}
+			newOrgFiles = append(newOrgFiles, f)
+		}
+
+		if !found {
+			fmt.Printf("Path %s not found in the list.\n", path)
+			return
+		}
+
+		viper.Set("org_files", newOrgFiles)
+
+		err = saveConfig()
+		if err != nil {
+			fmt.Printf("Error saving config: %v\n", err)
+			return
+		}
+
+		fmt.Printf("Removed path: %s\n", path)
+	},
+}
+
 func saveConfig() error {
 	configFile := viper.ConfigFileUsed()
 	if configFile == "" {
@@ -88,4 +127,5 @@ func init() {
 
 	configCmd.AddCommand(configListCmd)
 	configCmd.AddCommand(configAddPathCmd)
+	configCmd.AddCommand(configRemovePathCmd)
 }
