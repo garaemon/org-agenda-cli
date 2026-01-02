@@ -17,6 +17,8 @@ func TestNewModel(t *testing.T) {
 			Status:     "TODO",
 			Scheduled:  &now,
 			Tags:       []string{"work"},
+			FilePath:   "sample.org",
+			LineNumber: 1,
 			RawContent: "This is the content.",
 		},
 	}
@@ -43,8 +45,8 @@ func TestNewModel(t *testing.T) {
 	}
 
 	desc := li.Description()
-	if desc == "" {
-		t.Error("description should not be empty")
+	if !strings.Contains(desc, "sample.org:1") {
+		t.Errorf("description should contain file path and line number, got '%s'", desc)
 	}
 
 	// Test state transition

@@ -83,16 +83,15 @@ var agendaCmd = &cobra.Command{
 
 		for _, item := range allItems {
 			dateStr := ""
-			if item.Scheduled != nil && (item.Scheduled.Equal(start) || item.Scheduled.After(start)) && (item.Scheduled.Equal(end) || item.Scheduled.Before(end)) {
-				dateStr = fmt.Sprintf("Sched: %s", item.Scheduled.Format("2006-01-02"))
-			} else if item.Deadline != nil {
-				dateStr = fmt.Sprintf("Dead:  %s", item.Deadline.Format("2006-01-02"))
+						if item.Scheduled != nil && (item.Scheduled.Equal(start) || item.Scheduled.After(start)) && (item.Scheduled.Equal(end) || item.Scheduled.Before(end)) {
+							dateStr = fmt.Sprintf("Sched: %s", item.Scheduled.Format("2006-01-02"))
+						} else if item.Deadline != nil {
+							dateStr = fmt.Sprintf("Dead:  %s", item.Deadline.Format("2006-01-02"))
+						}
+						fmt.Printf("%s: [%s] %s (%s:%d)\n", dateStr, item.Status, item.Title, item.FilePath, item.LineNumber)
+					}
+				},
 			}
-			fmt.Printf("%s: [%s] %s\n", dateStr, item.Status, item.Title)
-		}
-	},
-}
-
 func init() {
 	rootCmd.AddCommand(agendaCmd)
 

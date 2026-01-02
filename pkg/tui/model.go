@@ -40,6 +40,9 @@ func (i ListItem) Description() string {
 	if len(i.Item.Tags) > 0 {
 		parts = append(parts, fmt.Sprintf(":%s:", strings.Join(i.Item.Tags, ":")))
 	}
+	if i.Item.FilePath != "" {
+		parts = append(parts, fmt.Sprintf("(%s:%d)", i.Item.FilePath, i.Item.LineNumber))
+	}
 	return strings.Join(parts, " ")
 }
 
