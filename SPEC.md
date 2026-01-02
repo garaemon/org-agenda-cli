@@ -50,6 +50,11 @@ Manages the configuration file.
     - `list`: Display current configuration (e.g., loaded Org file paths).
     - `add-path <path>`: Add an Org file path to the search/display list.
 
+#### 4. `tags`
+Lists all unique tags across all configured Org files.
+
+- **Usage**: `org-agenda tags`
+
 ## Configuration
 Configuration follows the XDG Base Directory Specification, typically stored at `~/.config/org-agenda-cli/config.yaml`.
 
