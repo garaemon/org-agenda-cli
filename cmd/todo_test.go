@@ -20,7 +20,9 @@ func TestTodoList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(tmpfile.Name())
+	defer func() {
+		_ = os.Remove(tmpfile.Name())
+	}()
 
 	if _, err := tmpfile.Write([]byte(content)); err != nil {
 		t.Fatal(err)
@@ -42,11 +44,15 @@ func TestTodoList(t *testing.T) {
 	todoListCmd.Run(todoListCmd, []string{})
 
 	// Restore stdout
-	w.Close()
+	if err := w.Close(); err != nil {
+		t.Logf("failed to close pipe: %v", err)
+	}
 	os.Stdout = old
 
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	if _, err := io.Copy(&buf, r); err != nil {
+		t.Fatal(err)
+	}
 	output := buf.String()
 
 	// Verify output
