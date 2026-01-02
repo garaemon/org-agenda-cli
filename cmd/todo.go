@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/garaemon/org-agenda-cli/pkg/config"
 	"github.com/garaemon/org-agenda-cli/pkg/parser"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -33,17 +34,18 @@ var todoListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Display a list of TODO items",
 	Run: func(cmd *cobra.Command, args []string) {
-		orgFiles := viper.GetStringSlice("org_files")
-		if len(orgFiles) == 0 {
+		paths := viper.GetStringSlice("org_files")
+		if len(paths) == 0 {
 			// Fallback for testing if no config exists
 			if _, err := os.Stat("sample.org"); err == nil {
-				orgFiles = []string{"sample.org"}
+				paths = []string{"sample.org"}
 			} else {
 				fmt.Println("No org files configured. Use 'org-agenda config add-path <path>' to add one.")
 				return
 			}
 		}
 
+		orgFiles := config.ResolveOrgFiles(paths)
 		for _, file := range orgFiles {
 			content, err := os.ReadFile(file)
 			if err != nil {

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/garaemon/org-agenda-cli/pkg/agenda"
+	"github.com/garaemon/org-agenda-cli/pkg/config"
 	"github.com/garaemon/org-agenda-cli/pkg/parser"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,16 +42,17 @@ var agendaCmd = &cobra.Command{
 			end = start.AddDate(0, 0, 7)
 		}
 
-		orgFiles := viper.GetStringSlice("org_files")
-		if len(orgFiles) == 0 {
+		paths := viper.GetStringSlice("org_files")
+		if len(paths) == 0 {
 			if _, err := os.Stat("sample.org"); err == nil {
-				orgFiles = []string{"sample.org"}
+				paths = []string{"sample.org"}
 			} else {
 				fmt.Println("No org files configured.")
 				return
 			}
 		}
 
+		orgFiles := config.ResolveOrgFiles(paths)
 		fmt.Printf("Agenda for %s to %s:\n", start.Format("2006-01-02"), end.Format("2006-01-02"))
 
 		for _, file := range orgFiles {
