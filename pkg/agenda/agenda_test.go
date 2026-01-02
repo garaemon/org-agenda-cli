@@ -27,3 +27,24 @@ func TestFilterItemsByRange(t *testing.T) {
 		t.Errorf("Expected 2 items, got %d", len(filtered))
 	}
 }
+
+func TestExtractUniqueTags(t *testing.T) {
+	items := []*item.Item{
+		{Title: "Task 1", Tags: []string{"tag1", "tag2"}},
+		{Title: "Task 2", Tags: []string{"tag2", "tag3"}},
+		{Title: "Task 3", Tags: []string{"tag1"}},
+	}
+
+	tags := ExtractUniqueTags(items)
+
+	if len(tags) != 3 {
+		t.Errorf("Expected 3 unique tags, got %d", len(tags))
+	}
+
+	expected := map[string]bool{"tag1": true, "tag2": true, "tag3": true}
+	for _, tag := range tags {
+		if !expected[tag] {
+			t.Errorf("Unexpected tag: %s", tag)
+		}
+	}
+}

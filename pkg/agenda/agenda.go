@@ -1,6 +1,7 @@
 package agenda
 
 import (
+	"sort"
 	"time"
 
 	"github.com/garaemon/org-agenda-cli/pkg/item"
@@ -33,4 +34,23 @@ func isWithin(t *time.Time, start, end time.Time) bool {
 	e := time.Date(end.Year(), end.Month(), end.Day(), 0, 0, 0, 0, end.Location())
 
 	return (d.After(s) || d.Equal(s)) && (d.Before(e) || d.Equal(e))
+}
+
+// ExtractUniqueTags returns a sorted list of unique tags from the given items.
+func ExtractUniqueTags(items []*item.Item) []string {
+	tagMap := make(map[string]bool)
+	for _, it := range items {
+		for _, tag := range it.Tags {
+			if tag != "" {
+				tagMap[tag] = true
+			}
+		}
+	}
+
+	tags := make([]string, 0, len(tagMap))
+	for tag := range tagMap {
+		tags = append(tags, tag)
+	}
+	sort.Strings(tags)
+	return tags
 }
