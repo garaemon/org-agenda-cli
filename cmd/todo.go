@@ -109,7 +109,11 @@ var todoAddCmd = &cobra.Command{
 			fmt.Printf("Error opening file: %v\n", err)
 			return
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				fmt.Printf("Error closing file: %v\n", err)
+			}
+		}()
 
 		content := fmt.Sprintf("* TODO %s", title)
 		if todoTags != "" {
