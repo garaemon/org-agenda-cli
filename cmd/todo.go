@@ -5,7 +5,9 @@ import (
 	"os"
 
 	"github.com/garaemon/org-agenda-cli/pkg/config"
+	"github.com/garaemon/org-agenda-cli/pkg/item"
 	"github.com/garaemon/org-agenda-cli/pkg/parser"
+	"github.com/garaemon/org-agenda-cli/pkg/tui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -17,6 +19,7 @@ var (
 	todoSchedule string
 	todoDeadline string
 	todoTags     string
+	todoTui      bool
 )
 
 // todoCmd represents the todo command
@@ -46,6 +49,7 @@ var todoListCmd = &cobra.Command{
 		}
 
 		orgFiles := config.ResolveOrgFiles(paths)
+		var allItems []*item.Item
 		for _, file := range orgFiles {
 			content, err := os.ReadFile(file)
 			if err != nil {
@@ -71,13 +75,24 @@ var todoListCmd = &cobra.Command{
 						continue
 					}
 				}
-
-				statusStr := item.Status
-				if statusStr == "" {
-					statusStr = "NONE"
-				}
-				fmt.Printf("[%s] %s (%s:%d)\n", statusStr, item.Title, item.FilePath, item.LineNumber)
+				allItems = append(allItems, item)
 			}
+		}
+
+		if todoTui {
+			if err := tui.Run(allItems, "Todo List"); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			return
+		}
+
+		for _, item := range allItems {
+			statusStr := item.Status
+			if statusStr == "" {
+				statusStr = "NONE"
+			}
+			fmt.Printf("[%s] %s (%s:%d)\n", statusStr, item.Title, item.FilePath, item.LineNumber)
 		}
 	},
 }
@@ -155,6 +170,7 @@ func init() {
 
 	todoListCmd.Flags().StringVar(&todoStatus, "status", "", "Filter by status (TODO|WAITING|DONE)")
 	todoListCmd.Flags().StringVar(&todoTag, "tag", "", "Filter by tag")
+	todoListCmd.Flags().BoolVar(&todoTui, "tui", false, "Enable interactive TUI mode")
 
 	todoAddCmd.Flags().StringVar(&todoFile, "file", "", "Specify the target file")
 	todoAddCmd.Flags().StringVar(&todoSchedule, "schedule", "", "Set a SCHEDULED timestamp")

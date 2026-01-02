@@ -15,7 +15,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "org-agenda",
 	Short: "A CLI tool to manage Org-mode agendas and TODO lists",
-	Long: `A CLI tool to parse Emacs Org-mode files and manage agendas and TODO lists directly from the terminal.`,
+	Long:  `A CLI tool to parse Emacs Org-mode files and manage agendas and TODO lists directly from the terminal.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

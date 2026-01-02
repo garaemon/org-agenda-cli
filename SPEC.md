@@ -6,6 +6,7 @@ A CLI tool to parse Emacs Org-mode files and manage agendas and TODO lists direc
 ## Architecture
 - **Language**: Go
 - **CLI Framework**: [Cobra](https://github.com/spf13/cobra)
+- **TUI Framework**: [Bubble Tea](https://github.com/charmbracelet/bubbletea)
 - **Configuration**: YAML format (via [Viper](https://github.com/spf13/viper))
 
 ## Command Structure
@@ -24,6 +25,7 @@ Displays the agenda view. Aggregates tasks with schedules and deadlines within a
     - `--range <day|week>`: Specify the display range (default: `day`).
     - `--date <YYYY-MM-DD>`: Specify the reference date (default: today).
     - `--tag <tag>`: Filter items by a specific tag.
+    - `--tui`: Enable interactive TUI mode.
 
 #### 2. `todo`
 Manages TODO items.
@@ -33,6 +35,7 @@ Manages TODO items.
     - `list`: Display a list of TODO items (default behavior).
         - `--status <TODO|WAITING|DONE>`: Filter by status.
         - `--tag <tag>`: Filter by tag.
+        - `--tui`: Enable interactive TUI mode.
     - `add`: Add a new TODO item.
         - `--file <path>`: Specify the target file (defaults to the configured inbox file).
         - `--schedule <date>`: Set a SCHEDULED timestamp.
@@ -49,6 +52,13 @@ Manages the configuration file.
 - **Subcommands**:
     - `list`: Display current configuration (e.g., loaded Org file paths).
     - `add-path <path>`: Add an Org file path to the search/display list.
+
+## TUI Interaction
+Common keybindings for TUI mode:
+- `j` / `Down`: Move selection down
+- `k` / `Up`: Move selection up
+- `q` / `Esc` / `Ctrl+C`: Quit
+
 
 ## Configuration
 Configuration follows the XDG Base Directory Specification, typically stored at `~/.config/org-agenda-cli/config.yaml`.
