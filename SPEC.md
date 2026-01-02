@@ -55,9 +55,18 @@ Manages the configuration file.
 
 ## TUI Interaction
 Common keybindings for TUI mode:
+
+### List View
 - `j` / `Down`: Move selection down
 - `k` / `Up`: Move selection up
+- `Enter`: View item details (RawContent)
 - `q` / `Esc` / `Ctrl+C`: Quit
+
+### Detail View
+- `j` / `Down`: Scroll down
+- `k` / `Up`: Scroll up
+- `q` / `Esc` / `Backspace`: Return to list view
+- `Ctrl+C`: Quit
 
 
 ## Configuration

@@ -5,8 +5,17 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/garaemon/org-agenda-cli/pkg/item"
+)
+
+type sessionState int
+
+const (
+	listView sessionState = iota
+	detailView
 )
 
 type ListItem struct {
@@ -39,7 +48,9 @@ func (i ListItem) FilterValue() string {
 }
 
 type Model struct {
-	list list.Model
+	list     list.Model
+	viewport viewport.Model
+	state    sessionState
 }
 
 func NewModel(items []*item.Item, title string) Model {
@@ -51,7 +62,7 @@ func NewModel(items []*item.Item, title string) Model {
 	l := list.New(listItems, list.NewDefaultDelegate(), 0, 0)
 	l.Title = title
 
-	return Model{list: l}
+	return Model{list: l, state: listView}
 }
 
 func (m Model) Init() tea.Cmd {
@@ -59,21 +70,69 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+	var cmds []tea.Cmd
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		if msg.String() == "ctrl+c" {
 			return m, tea.Quit
 		}
+		if m.state == detailView {
+			switch msg.String() {
+			case "q", "esc", "backspace":
+				m.state = listView
+				return m, nil
+			}
+		} else if m.state == listView {
+			if msg.String() == "enter" {
+				i, ok := m.list.SelectedItem().(ListItem)
+				if ok {
+					m.state = detailView
+					content := fmt.Sprintf("# %s\n\n%s", i.Item.Title, i.Item.RawContent)
+					m.viewport.SetContent(content)
+					return m, nil
+				}
+			}
+		}
+
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
+		
+		headerHeight := lipgloss.Height(m.headerView())
+		m.viewport = viewport.New(msg.Width, msg.Height-headerHeight)
+		m.viewport.YPosition = headerHeight
 	}
 
-	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg)
-	return m, cmd
+	switch m.state {
+	case listView:
+		m.list, cmd = m.list.Update(msg)
+		cmds = append(cmds, cmd)
+	case detailView:
+		m.viewport, cmd = m.viewport.Update(msg)
+		cmds = append(cmds, cmd)
+	}
+
+	return m, tea.Batch(cmds...)
 }
 
 func (m Model) View() string {
+	if m.state == detailView {
+		return fmt.Sprintf("%s\n%s", m.headerView(), m.viewport.View())
+	}
 	return docStyle.Render(m.list.View())
+}
+
+func (m Model) headerView() string {
+	title := "Details"
+	line := strings.Repeat("─", max(0, m.viewport.Width-len(title)))
+	return lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Render(title + line)
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
