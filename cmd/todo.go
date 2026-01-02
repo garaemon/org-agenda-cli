@@ -55,8 +55,14 @@ var todoListCmd = &cobra.Command{
 
 			items := parser.ParseString(string(content), file)
 			for _, item := range items {
-				if todoStatus != "" && item.Status != todoStatus {
-					continue
+				if todoStatus != "" {
+					if item.Status != todoStatus {
+						continue
+					}
+				} else {
+					if item.Status == "" {
+						continue
+					}
 				}
 				// Basic filtering by tag (simple implementation)
 				if todoTag != "" {
