@@ -71,6 +71,14 @@ Add a new TODO item to the default file:
 org-agenda todo add "Review project proposal" --tags "work,urgent" --schedule 2026-01-05
 ```
 
+### Tags
+
+List all unique tags across all configured Org files:
+
+```bash
+org-agenda tags
+```
+
 ## Development
 
 ### Prerequisites
