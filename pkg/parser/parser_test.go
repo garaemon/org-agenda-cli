@@ -15,13 +15,15 @@ Body of Task 1
 * DONE Task 2
 DEADLINE: <2026-01-02 Fri>
 Body of Task 2
+* Non-TODO Headline
+Some content
 `
 	// In a real scenario, we would write this to a temporary file.
 	// For now, let's implement ParseString or use a Reader.
 	items := ParseString(content, "test.org")
 
-	if len(items) != 2 {
-		t.Errorf("Expected 2 items, got %d", len(items))
+	if len(items) != 3 {
+		t.Errorf("Expected 3 items, got %d", len(items))
 		return
 	}
 
@@ -37,6 +39,10 @@ Body of Task 2
 	}
 	if items[1].Deadline == nil || items[1].Deadline.Format("2006-01-02") != "2026-01-02" {
 		t.Errorf("Unexpected deadline for item 1: %v", items[1].Deadline)
+	}
+
+	if items[2].Title != "Non-TODO Headline" || items[2].Status != "" {
+		t.Errorf("Unexpected item 2: %+v", items[2])
 	}
 }
 
