@@ -81,13 +81,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.String() == "ctrl+c" {
 			return m, tea.Quit
 		}
-		if m.state == detailView {
+		switch m.state {
+		case detailView:
 			switch msg.String() {
 			case "q", "esc", "backspace":
 				m.state = listView
 				return m, nil
 			}
-		} else if m.state == listView {
+		case listView:
 			if msg.String() == "enter" {
 				i, ok := m.list.SelectedItem().(ListItem)
 				if ok {
