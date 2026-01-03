@@ -47,7 +47,9 @@ func TestConfigRemovePath(t *testing.T) {
 		os.Stdout = old
 
 		var buf bytes.Buffer
-		io.Copy(&buf, r)
+		if _, err := io.Copy(&buf, r); err != nil {
+			t.Fatal(err)
+		}
 		output := buf.String()
 
 		if !strings.Contains(output, "Removed path") {
@@ -84,7 +86,9 @@ func TestConfigRemovePath(t *testing.T) {
 		os.Stdout = old
 
 		var buf bytes.Buffer
-		io.Copy(&buf, r)
+		if _, err := io.Copy(&buf, r); err != nil {
+			t.Fatal(err)
+		}
 		output := buf.String()
 
 		if !strings.Contains(output, "not found in the list") {
@@ -132,7 +136,9 @@ func TestConfigAddPath(t *testing.T) {
 		os.Stdout = old
 
 		var buf bytes.Buffer
-		io.Copy(&buf, r)
+		if _, err := io.Copy(&buf, r); err != nil {
+			t.Fatal(err)
+		}
 		output := buf.String()
 
 		if !strings.Contains(output, "Added path") {
@@ -162,7 +168,9 @@ func TestConfigAddPath(t *testing.T) {
 		os.Stdout = old
 
 		var buf bytes.Buffer
-		io.Copy(&buf, r)
+		if _, err := io.Copy(&buf, r); err != nil {
+			t.Fatal(err)
+		}
 		output := buf.String()
 
 		if !strings.Contains(output, "is already in the list") {
