@@ -1,0 +1,11 @@
+{
+  "name": "Org Agenda CLI Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "containerEnv": {
+    "PATH": "${containerEnv:PATH}:/usr/local/go/bin"
+  },
+  "customizations": {},
+  "remoteUser": "root"
+}
