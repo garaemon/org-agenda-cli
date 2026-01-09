@@ -22,7 +22,7 @@ Displays the agenda view. Aggregates tasks with schedules and deadlines within a
 
 - **Usage**: `org-agenda agenda [flags]`
 - **Flags**:
-    - `--range <day|week>`: Specify the display range (default: `day`).
+    - `--range <day|week|month>`: Specify the display range (default: `day`).
     - `--date <YYYY-MM-DD>`: Specify the reference date (default: today).
     - `--tag <tag>`: Filter items by a specific tag.
     - `--tui`: Enable interactive TUI mode.
