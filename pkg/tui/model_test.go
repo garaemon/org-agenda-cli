@@ -79,8 +79,8 @@ func TestNewModel(t *testing.T) {
 func TestPaging(t *testing.T) {
 	now := time.Now()
 	// Item 1: today
-	// Item 2: 8 days later (outside first week)
-	item2Date := now.AddDate(0, 0, 8)
+	// Item 2: 7 days later (8th day, should be outside first week: days 0-6)
+	item2Date := now.AddDate(0, 0, 7)
 
 	items := []*item.Item{
 		{
