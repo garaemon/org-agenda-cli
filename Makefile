@@ -18,3 +18,11 @@ clean:
 .PHONY: lint
 lint:
 	go vet ./...
+
+.PHONY: fmt
+fmt:
+	go fmt ./...
+
+.PHONY: check-fmt
+check-fmt:
+	test -z "$$(gofmt -l .)"
