@@ -3,11 +3,13 @@ package tui
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/garaemon/org-agenda-cli/pkg/agenda"
 	"github.com/garaemon/org-agenda-cli/pkg/item"
 )
 
@@ -51,21 +53,60 @@ func (i ListItem) FilterValue() string {
 }
 
 type Model struct {
-	list     list.Model
-	viewport viewport.Model
-	state    sessionState
+	list        list.Model
+	viewport    viewport.Model
+	state       sessionState
+	allItems    []*item.Item
+	currentDate time.Time
+	viewRange   string
+	title       string
 }
 
-func NewModel(items []*item.Item, title string) Model {
+func NewModel(items []*item.Item, start time.Time, viewRange string, title string) Model {
+	m := Model{
+		allItems:    items,
+		currentDate: start,
+		viewRange:   viewRange,
+		title:       title,
+		state:       listView,
+	}
+	// Initialize list with empty items, will be populated by refreshList
+	l := list.New([]list.Item{}, list.NewDefaultDelegate(), 0, 0)
+	m.list = l
+	m.refreshList()
+
+	return m
+}
+
+func (m *Model) refreshList() {
+	if m.viewRange == "" {
+		var listItems []list.Item
+		for _, it := range m.allItems {
+			listItems = append(listItems, ListItem{Item: it})
+		}
+		m.list.SetItems(listItems)
+		m.list.Title = m.title
+		return
+	}
+
+	start := m.currentDate
+	end := start
+	if m.viewRange == "week" {
+		end = start.AddDate(0, 0, 7)
+	} else {
+		// Default to day
+		end = start
+	}
+
+	filtered := agenda.FilterItemsByRange(m.allItems, start, end)
+
 	var listItems []list.Item
-	for _, it := range items {
+	for _, it := range filtered {
 		listItems = append(listItems, ListItem{Item: it})
 	}
 
-	l := list.New(listItems, list.NewDefaultDelegate(), 0, 0)
-	l.Title = title
-
-	return Model{list: l, state: listView}
+	m.list.SetItems(listItems)
+	m.list.Title = fmt.Sprintf("Agenda: %s - %s", start.Format("2006-01-02"), end.Format("2006-01-02"))
 }
 
 func (m Model) Init() tea.Cmd {
@@ -89,7 +130,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 		case listView:
-			if msg.String() == "enter" {
+			switch msg.String() {
+			case "enter":
 				i, ok := m.list.SelectedItem().(ListItem)
 				if ok {
 					m.state = detailView
@@ -97,6 +139,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.viewport.SetContent(content)
 					return m, nil
 				}
+			case "n":
+				if m.viewRange == "week" {
+					m.currentDate = m.currentDate.AddDate(0, 0, 7)
+				} else {
+					m.currentDate = m.currentDate.AddDate(0, 0, 1)
+				}
+				m.refreshList()
+				return m, nil
+			case "p":
+				if m.viewRange == "week" {
+					m.currentDate = m.currentDate.AddDate(0, 0, -7)
+				} else {
+					m.currentDate = m.currentDate.AddDate(0, 0, -1)
+				}
+				m.refreshList()
+				return m, nil
 			}
 		}
 
