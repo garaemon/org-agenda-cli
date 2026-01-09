@@ -84,3 +84,69 @@ func TestAgendaRecursive(t *testing.T) {
 		t.Errorf("Output should contain today's date %s, got:\n%s", today, output)
 	}
 }
+
+func TestAgendaRangeMonth(t *testing.T) {
+	// Setup temporary directory structure
+	tmpDir, err := os.MkdirTemp("", "org-agenda-cmd-test-month-*")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	// Create a task scheduled for today + 20 days
+	future := time.Now().AddDate(0, 0, 20)
+	futureDate := future.Format("2006-01-02")
+	futureDayName := future.Format("Mon")
+	timestamp := fmt.Sprintf("<%s %s>", futureDate, futureDayName)
+
+	// Create a task scheduled for today + 40 days (should not be included)
+	farFuture := time.Now().AddDate(0, 0, 40)
+	farFutureDate := farFuture.Format("2006-01-02")
+	farFutureDayName := farFuture.Format("Mon")
+	farTimestamp := fmt.Sprintf("<%s %s>", farFutureDate, farFutureDayName)
+
+	content := fmt.Sprintf("* TODO Near Task\nSCHEDULED: %s\n* TODO Far Task\nSCHEDULED: %s\n", timestamp, farTimestamp)
+
+	file := filepath.Join(tmpDir, "test.org")
+
+	if err := os.WriteFile(file, []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Configure viper
+	viper.Reset()
+	viper.Set("org_files", []string{tmpDir})
+
+	// Reset flags
+	agendaDate = ""
+	agendaRange = "month"
+	agendaTui = false
+
+	// Capture stdout
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	// Run the command
+	agendaCmd.Run(agendaCmd, []string{})
+
+	// Restore stdout
+	if err := w.Close(); err != nil {
+		t.Logf("failed to close pipe: %v", err)
+	}
+	os.Stdout = old
+
+	var buf bytes.Buffer
+	if _, err := io.Copy(&buf, r); err != nil {
+		t.Fatal(err)
+	}
+	output := buf.String()
+
+	// Verify output
+	if !strings.Contains(output, "Near Task") {
+		t.Errorf("Output should contain 'Near Task', got:\n%s", output)
+	}
+	if strings.Contains(output, "Far Task") {
+		t.Errorf("Output should NOT contain 'Far Task', got:\n%s", output)
+	}
+}

@@ -93,6 +93,8 @@ func (m *Model) refreshList() {
 	end := start
 	if m.viewRange == "week" {
 		end = start.AddDate(0, 0, 7)
+	} else if m.viewRange == "month" {
+		end = start.AddDate(0, 1, 0)
 	} else {
 		// Default to day
 		end = start
@@ -142,6 +144,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "n":
 				if m.viewRange == "week" {
 					m.currentDate = m.currentDate.AddDate(0, 0, 7)
+				} else if m.viewRange == "month" {
+					m.currentDate = m.currentDate.AddDate(0, 1, 0)
 				} else {
 					m.currentDate = m.currentDate.AddDate(0, 0, 1)
 				}
@@ -150,6 +154,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "p":
 				if m.viewRange == "week" {
 					m.currentDate = m.currentDate.AddDate(0, 0, -7)
+				} else if m.viewRange == "month" {
+					m.currentDate = m.currentDate.AddDate(0, -1, 0)
 				} else {
 					m.currentDate = m.currentDate.AddDate(0, 0, -1)
 				}

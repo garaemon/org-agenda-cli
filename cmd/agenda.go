@@ -45,6 +45,8 @@ var agendaCmd = &cobra.Command{
 		end := start
 		if agendaRange == "week" {
 			end = start.AddDate(0, 0, 7)
+		} else if agendaRange == "month" {
+			end = start.AddDate(0, 1, 0)
 		}
 
 		paths := viper.GetStringSlice("org_files")
@@ -115,7 +117,7 @@ var agendaCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(agendaCmd)
 
-	agendaCmd.Flags().StringVar(&agendaRange, "range", "day", "Specify the display range (day|week)")
+	agendaCmd.Flags().StringVar(&agendaRange, "range", "day", "Specify the display range (day|week|month)")
 	agendaCmd.Flags().StringVar(&agendaDate, "date", "", "Specify the reference date (YYYY-MM-DD, default: today)")
 	agendaCmd.Flags().StringVar(&agendaTag, "tag", "", "Filter items by a specific tag")
 	agendaCmd.Flags().BoolVar(&agendaTui, "tui", false, "Enable interactive TUI mode")
