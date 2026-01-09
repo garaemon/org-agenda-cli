@@ -26,6 +26,9 @@ jobs:
         with:
           version: latest
 
+      - name: Check formatting
+        run: make check-fmt
+
       - name: Build
         run: make build
 
