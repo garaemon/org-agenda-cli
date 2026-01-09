@@ -105,8 +105,9 @@ var agendaCmd = &cobra.Command{
 			}
 			fmt.Printf("%s: [%s] %s (%s:%d)\n", dateStr, item.Status, item.Title, item.FilePath, item.LineNumber)
 		}
-				},
-			}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(agendaCmd)
 

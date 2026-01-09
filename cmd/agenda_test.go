@@ -27,14 +27,14 @@ func TestAgendaRecursive(t *testing.T) {
 	}
 
 	today := time.Now().Format("2006-01-02")
-dayName := time.Now().Format("Mon")
-timestamp := fmt.Sprintf("<%s %s>", today, dayName)
+	dayName := time.Now().Format("Mon")
+	timestamp := fmt.Sprintf("<%s %s>", today, dayName)
 
 	rootContent := fmt.Sprintf("* TODO Root Task\nSCHEDULED: %s\n", timestamp)
-nestedContent := fmt.Sprintf("* TODO Nested Task\nSCHEDULED: %s\n", timestamp)
+	nestedContent := fmt.Sprintf("* TODO Nested Task\nSCHEDULED: %s\n", timestamp)
 
 	rootFile := filepath.Join(tmpDir, "root.org")
-nestedFile := filepath.Join(nestedDir, "nested.org")
+	nestedFile := filepath.Join(nestedDir, "nested.org")
 
 	if err := os.WriteFile(rootFile, []byte(rootContent), 0644); err != nil {
 		t.Fatal(err)
@@ -49,8 +49,8 @@ nestedFile := filepath.Join(nestedDir, "nested.org")
 
 	// Reset flags just in case
 	agendaDate = ""
-agendaRange = "day"
-agendaTui = false
+	agendaRange = "day"
+	agendaTui = false
 
 	// Capture stdout
 	old := os.Stdout

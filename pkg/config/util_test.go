@@ -20,7 +20,7 @@ func TestResolveOrgFiles(t *testing.T) {
 		"root.org",
 		"nested/sub.org",
 		"nested/deep/deep.org",
-		"other.txt", // Should be ignored
+		"other.txt",   // Should be ignored
 		".hidden.org", // Should be included if not ignored by logic
 	}
 
