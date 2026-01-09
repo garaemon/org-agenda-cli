@@ -68,12 +68,16 @@ var agendaCmd = &cobra.Command{
 			}
 
 			items := parser.ParseString(string(content), file)
-			filtered := agenda.FilterItemsByRange(items, start, end)
-			allItems = append(allItems, filtered...)
+			if agendaTui {
+				allItems = append(allItems, items...)
+			} else {
+				filtered := agenda.FilterItemsByRange(items, start, end)
+				allItems = append(allItems, filtered...)
+			}
 		}
 
 		if agendaTui {
-			err := tui.Run(allItems, fmt.Sprintf("Agenda: %s - %s", start.Format("2006-01-02"), end.Format("2006-01-02")))
+			err := tui.Run(allItems, start, agendaRange, "")
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)

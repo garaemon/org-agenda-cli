@@ -22,9 +22,11 @@ func TestNewModel(t *testing.T) {
 			RawContent: "This is the content.",
 		},
 	}
-	m := NewModel(items, "Test Agenda")
-	if m.list.Title != "Test Agenda" {
-		t.Errorf("expected title 'Test Agenda', got '%s'", m.list.Title)
+	m := NewModel(items, now, "day", "")
+	// Title format: Agenda: YYYY-MM-DD - YYYY-MM-DD
+	expectedPrefix := "Agenda: "
+	if !strings.HasPrefix(m.list.Title, expectedPrefix) {
+		t.Errorf("expected title to start with '%s', got '%s'", expectedPrefix, m.list.Title)
 	}
 	if m.state != listView {
 		t.Errorf("expected initial state listView, got %v", m.state)
@@ -71,5 +73,59 @@ func TestNewModel(t *testing.T) {
 	m = updatedModel.(Model)
 	if m.state != listView {
 		t.Errorf("expected state listView after Esc, got %v", m.state)
+	}
+}
+
+func TestPaging(t *testing.T) {
+	now := time.Now()
+	// Item 1: today
+	// Item 2: 8 days later (outside first week)
+	item2Date := now.AddDate(0, 0, 8)
+
+	items := []*item.Item{
+		{
+			Title:     "Item 1",
+			Scheduled: &now,
+		},
+		{
+			Title:     "Item 2",
+			Scheduled: &item2Date,
+		},
+	}
+
+	// Initialize with week view
+	m := NewModel(items, now, "week", "")
+
+	// Initially, only Item 1 should be visible
+	if len(m.list.Items()) != 1 {
+		t.Errorf("Expected 1 item initially, got %d", len(m.list.Items()))
+	}
+	if m.list.Items()[0].(ListItem).Item.Title != "Item 1" {
+		t.Errorf("Expected Item 1, got %s", m.list.Items()[0].(ListItem).Item.Title)
+	}
+
+	// Press 'n' to go to next week
+	// KeyMsg for 'n' (rune)
+	updatedModel, _ := m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'n'}})
+	m = updatedModel.(Model)
+
+	// Now Item 2 should be visible, Item 1 should be gone
+	if len(m.list.Items()) != 1 {
+		t.Fatalf("Expected 1 item after paging next, got %d", len(m.list.Items()))
+	}
+	if m.list.Items()[0].(ListItem).Item.Title != "Item 2" {
+		t.Errorf("Expected Item 2, got %s", m.list.Items()[0].(ListItem).Item.Title)
+	}
+
+	// Press 'p' to go back
+	updatedModel, _ = m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'p'}})
+	m = updatedModel.(Model)
+
+	// Back to Item 1
+	if len(m.list.Items()) != 1 {
+		t.Fatalf("Expected 1 item after paging back, got %d", len(m.list.Items()))
+	}
+	if m.list.Items()[0].(ListItem).Item.Title != "Item 1" {
+		t.Errorf("Expected Item 1, got %s", m.list.Items()[0].(ListItem).Item.Title)
 	}
 }

@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/garaemon/org-agenda-cli/pkg/config"
 	"github.com/garaemon/org-agenda-cli/pkg/item"
@@ -89,7 +90,7 @@ var todoListCmd = &cobra.Command{
 		}
 
 		if todoTui {
-			if err := tui.Run(allItems, "Todo List"); err != nil {
+			if err := tui.Run(allItems, time.Time{}, "", "Todo List"); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
