@@ -20,7 +20,7 @@ func TestConfigRemovePath(t *testing.T) {
 	defer os.RemoveAll(tmpConfigDir)
 
 	configPath := filepath.Join(tmpConfigDir, "config.yaml")
-	
+
 	// Create dummy org files to test with
 	file1, _ := filepath.Abs("test1.org")
 	file2, _ := filepath.Abs("test2.org")

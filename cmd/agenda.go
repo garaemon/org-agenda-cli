@@ -40,6 +40,8 @@ var agendaCmd = &cobra.Command{
 			start = time.Now()
 		}
 
+		// Truncate time part for date-only comparison
+		start = time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
 		end := start
 		if agendaRange == "week" {
 			end = start.AddDate(0, 0, 7)
@@ -87,15 +89,29 @@ var agendaCmd = &cobra.Command{
 
 		for _, item := range allItems {
 			dateStr := ""
-						if item.Scheduled != nil && (item.Scheduled.Equal(start) || item.Scheduled.After(start)) && (item.Scheduled.Equal(end) || item.Scheduled.Before(end)) {
-							dateStr = fmt.Sprintf("Sched: %s", item.Scheduled.Format("2006-01-02"))
-						} else if item.Deadline != nil {
-							dateStr = fmt.Sprintf("Dead:  %s", item.Deadline.Format("2006-01-02"))
-						}
-						fmt.Printf("%s: [%s] %s (%s:%d)\n", dateStr, item.Status, item.Title, item.FilePath, item.LineNumber)
-					}
-				},
+			// Helper to check if a date is strictly within [start, end]
+			inRange := func(t *time.Time) bool {
+				if t == nil {
+					return false
+				}
+				// Normalize to UTC midnight for date comparison
+				d := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+				s := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, time.UTC)
+				e := time.Date(end.Year(), end.Month(), end.Day(), 0, 0, 0, 0, time.UTC)
+
+				return (d.After(s) || d.Equal(s)) && (d.Before(e) || d.Equal(e))
 			}
+
+			if inRange(item.Scheduled) {
+				dateStr = fmt.Sprintf("Sched: %s", item.Scheduled.Format("2006-01-02"))
+			} else if inRange(item.Deadline) {
+				dateStr = fmt.Sprintf("Dead:  %s", item.Deadline.Format("2006-01-02"))
+			}
+			fmt.Printf("%s: [%s] %s (%s:%d)\n", dateStr, item.Status, item.Title, item.FilePath, item.LineNumber)
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(agendaCmd)
 

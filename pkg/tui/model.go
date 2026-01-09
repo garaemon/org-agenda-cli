@@ -161,7 +161,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
-		
+
 		headerHeight := lipgloss.Height(m.headerView())
 		m.viewport = viewport.New(msg.Width, msg.Height-headerHeight)
 		m.viewport.YPosition = headerHeight

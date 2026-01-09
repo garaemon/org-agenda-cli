@@ -28,10 +28,10 @@ func FilterItemsByRange(items []*item.Item, start, end time.Time) []*item.Item {
 }
 
 func isWithin(t *time.Time, start, end time.Time) bool {
-	// Truncate to day for comparison
-	d := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
-	s := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
-	e := time.Date(end.Year(), end.Month(), end.Day(), 0, 0, 0, 0, end.Location())
+	// Truncate to day for comparison, forcing UTC to avoid timezone issues
+	d := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+	s := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, time.UTC)
+	e := time.Date(end.Year(), end.Month(), end.Day(), 0, 0, 0, 0, time.UTC)
 
 	return (d.After(s) || d.Equal(s)) && (d.Before(e) || d.Equal(e))
 }
