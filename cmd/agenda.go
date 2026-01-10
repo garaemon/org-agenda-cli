@@ -44,7 +44,7 @@ var agendaCmd = &cobra.Command{
 		start = time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
 		end := start
 		if agendaRange == "week" {
-			end = start.AddDate(0, 0, 7)
+			end = start.AddDate(0, 0, 6)
 		} else if agendaRange == "month" {
 			end = start.AddDate(0, 1, 0)
 		}

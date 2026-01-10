@@ -92,7 +92,7 @@ func (m *Model) refreshList() {
 	start := m.currentDate
 	end := start
 	if m.viewRange == "week" {
-		end = start.AddDate(0, 0, 7)
+		end = start.AddDate(0, 0, 6)
 	} else if m.viewRange == "month" {
 		end = start.AddDate(0, 1, 0)
 	} else {

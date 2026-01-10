@@ -26,6 +26,22 @@ func TestFilterItemsByRange(t *testing.T) {
 	if len(filtered) != 2 {
 		t.Errorf("Expected 2 items, got %d", len(filtered))
 	}
+
+	// Test boundary conditions
+	dStart := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	dEnd := time.Date(2026, 1, 7, 0, 0, 0, 0, time.UTC)
+	dJustAfterEnd := time.Date(2026, 1, 8, 0, 0, 0, 0, time.UTC)
+
+	boundaryItems := []*item.Item{
+		{Title: "Start", Scheduled: &dStart},
+		{Title: "End", Scheduled: &dEnd},
+		{Title: "JustAfter", Scheduled: &dJustAfterEnd},
+	}
+
+	res := FilterItemsByRange(boundaryItems, start, end)
+	if len(res) != 2 {
+		t.Errorf("Expected 2 boundary items, got %d", len(res))
+	}
 }
 
 func TestExtractUniqueTags(t *testing.T) {
