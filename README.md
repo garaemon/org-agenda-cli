@@ -11,9 +11,21 @@ A CLI tool to parse Emacs Org-mode files and manage agendas and TODO lists direc
 
 ## Installation
 
+### Using go install
+
 ```bash
-go build -o org-agenda main.go
-mv org-agenda /usr/local/bin/
+go install github.com/garaemon/devgo@latest
+```
+
+### Building from source
+
+You can also build the project from source using `make`:
+
+```bash
+make build
+# The binary 'org-agenda-cli' will be created in the current directory.
+# You can move it to your $PATH, e.g.:
+sudo mv org-agenda-cli /usr/local/bin/org-agenda
 ```
 
 ## Usage
