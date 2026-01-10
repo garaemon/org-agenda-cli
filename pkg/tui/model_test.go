@@ -129,3 +129,56 @@ func TestPaging(t *testing.T) {
 		t.Errorf("Expected Item 1, got %s", m.list.Items()[0].(ListItem).Item.Title)
 	}
 }
+
+func TestPagingMonth(t *testing.T) {
+	now := time.Now()
+	// Item 1: today
+	// Item 2: 32 days later (outside first month)
+	item2Date := now.AddDate(0, 0, 32)
+
+	items := []*item.Item{
+		{
+			Title:     "Item 1",
+			Scheduled: &now,
+		},
+		{
+			Title:     "Item 2",
+			Scheduled: &item2Date,
+		},
+	}
+
+	// Initialize with month view
+	m := NewModel(items, now, "month", "")
+
+	// Initially, only Item 1 should be visible
+	if len(m.list.Items()) != 1 {
+		t.Errorf("Expected 1 item initially, got %d", len(m.list.Items()))
+	}
+	if m.list.Items()[0].(ListItem).Item.Title != "Item 1" {
+		t.Errorf("Expected Item 1, got %s", m.list.Items()[0].(ListItem).Item.Title)
+	}
+
+	// Press 'n' to go to next month
+	updatedModel, _ := m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'n'}})
+	m = updatedModel.(Model)
+
+	// Now Item 2 should be visible, Item 1 should be gone
+	if len(m.list.Items()) != 1 {
+		t.Fatalf("Expected 1 item after paging next, got %d", len(m.list.Items()))
+	}
+	if m.list.Items()[0].(ListItem).Item.Title != "Item 2" {
+		t.Errorf("Expected Item 2, got %s", m.list.Items()[0].(ListItem).Item.Title)
+	}
+
+	// Press 'p' to go back
+	updatedModel, _ = m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'p'}})
+	m = updatedModel.(Model)
+
+	// Back to Item 1
+	if len(m.list.Items()) != 1 {
+		t.Fatalf("Expected 1 item after paging back, got %d", len(m.list.Items()))
+	}
+	if m.list.Items()[0].(ListItem).Item.Title != "Item 1" {
+		t.Errorf("Expected Item 1, got %s", m.list.Items()[0].(ListItem).Item.Title)
+	}
+}
