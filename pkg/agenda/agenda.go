@@ -54,3 +54,24 @@ func ExtractUniqueTags(items []*item.Item) []string {
 	sort.Strings(tags)
 	return tags
 }
+
+// AdjustDate aligns the start date based on the range type.
+// For "week", it returns the preceding Sunday.
+// For "month", it returns the first day of the month.
+// For other ranges, it returns the date as is.
+func AdjustDate(date time.Time, rangeType string) time.Time {
+	// Normalize to midnight
+	d := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+
+	switch rangeType {
+	case "week":
+		// Weekday(): Sunday is 0, ... Saturday is 6.
+		// Subtract the weekday value to get to Sunday.
+		offset := int(d.Weekday())
+		return d.AddDate(0, 0, -offset)
+	case "month":
+		return time.Date(d.Year(), d.Month(), 1, 0, 0, 0, 0, d.Location())
+	default:
+		return d
+	}
+}

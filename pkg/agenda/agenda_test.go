@@ -64,3 +64,44 @@ func TestExtractUniqueTags(t *testing.T) {
 		}
 	}
 }
+
+func TestAdjustDate(t *testing.T) {
+	// Fri, Jan 9, 2026
+	baseDate := time.Date(2026, 1, 9, 12, 30, 0, 0, time.UTC)
+
+	tests := []struct {
+		rangeType string
+		expected  time.Time
+	}{
+		{
+			rangeType: "week",
+			// Should be Sun, Jan 4, 2026
+			expected: time.Date(2026, 1, 4, 0, 0, 0, 0, time.UTC),
+		},
+		{
+			rangeType: "month",
+			// Should be Jan 1, 2026
+			expected: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+		},
+		{
+			rangeType: "day",
+			// Should be Jan 9, 2026 (normalized)
+			expected: time.Date(2026, 1, 9, 0, 0, 0, 0, time.UTC),
+		},
+	}
+
+	for _, tt := range tests {
+		got := AdjustDate(baseDate, tt.rangeType)
+		if !got.Equal(tt.expected) {
+			t.Errorf("AdjustDate(%s, %s) = %s; want %s", baseDate, tt.rangeType, got, tt.expected)
+		}
+	}
+
+	// Test case where today is Sunday
+	sunday := time.Date(2026, 1, 4, 10, 0, 0, 0, time.UTC)
+	gotSunday := AdjustDate(sunday, "week")
+	expectedSunday := time.Date(2026, 1, 4, 0, 0, 0, 0, time.UTC)
+	if !gotSunday.Equal(expectedSunday) {
+		t.Errorf("AdjustDate(%s, week) = %s; want %s", sunday, gotSunday, expectedSunday)
+	}
+}

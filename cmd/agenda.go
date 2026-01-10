@@ -40,8 +40,9 @@ var agendaCmd = &cobra.Command{
 			start = time.Now()
 		}
 
-		// Truncate time part for date-only comparison
-		start = time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
+		// Adjust start date based on range (Sunday for week, 1st for month)
+		start = agenda.AdjustDate(start, agendaRange)
+
 		end := start
 		if agendaRange == "week" {
 			end = start.AddDate(0, 0, 6)
