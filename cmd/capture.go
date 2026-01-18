@@ -40,6 +40,9 @@ var captureCmd = &cobra.Command{
 			return
 		}
 
+		// Apply date formatting to targetFile (e.g. %Y-capture.org -> 2026-capture.org)
+		targetFile = capture.Format(targetFile, "")
+
 		// Determine format
 		format := viper.GetString("capture.format")
 		if format == "" {
@@ -54,17 +57,40 @@ var captureCmd = &cobra.Command{
 			entry += "\n"
 		}
 
-		// Append to file
-		f, err := os.OpenFile(targetFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			fmt.Printf("Error opening file: %v\n", err)
-			return
-		}
-		defer f.Close()
+		prepend := viper.GetBool("capture.prepend")
 
-		if _, err := f.WriteString(entry); err != nil {
-			fmt.Printf("Error writing to file: %v\n", err)
-			return
+		if prepend {
+			// Read existing content
+			existingContent, err := os.ReadFile(targetFile)
+			if err != nil && !os.IsNotExist(err) {
+				fmt.Printf("Error reading file: %v\n", err)
+				return
+			}
+
+			// Prepend new entry
+			newContent := entry
+			if len(existingContent) > 0 {
+				newContent += string(existingContent)
+			}
+
+			// Write back
+			if err := os.WriteFile(targetFile, []byte(newContent), 0644); err != nil {
+				fmt.Printf("Error writing to file: %v\n", err)
+				return
+			}
+		} else {
+			// Append to file
+			f, err := os.OpenFile(targetFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				fmt.Printf("Error opening file: %v\n", err)
+				return
+			}
+			defer f.Close()
+
+			if _, err := f.WriteString(entry); err != nil {
+				fmt.Printf("Error writing to file: %v\n", err)
+				return
+			}
 		}
 
 		fmt.Printf("Captured to %s\n", targetFile)

@@ -37,6 +37,18 @@ func TestFormat(t *testing.T) {
 			content:   "My Note",
 			wantRegex: `\* \[\d{4}-\d{2}-\d{2} \w{3} \d{2}:\d{2}\] My Note`,
 		},
+		{
+			name:      "Extended Date Formats",
+			template:  "%Y-%m-%d %H:%M:%S %A %a",
+			content:   "Ignored",
+			wantRegex: `\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \w+ \w{3}`,
+		},
+		{
+			name:      "Year and content",
+			template:  "%Y: %c",
+			content:   "Diary",
+			wantRegex: `\d{4}: Diary`,
+		},
 	}
 
 	for _, tt := range tests {

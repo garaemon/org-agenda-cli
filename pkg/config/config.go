@@ -13,6 +13,7 @@ type Config struct {
 type CaptureConfig struct {
 	DefaultFile string `mapstructure:"default_file"`
 	Format      string `mapstructure:"format"`
+	Prepend     bool   `mapstructure:"prepend"`
 }
 
 func LoadConfig() (*Config, error) {
