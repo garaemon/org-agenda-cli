@@ -37,8 +37,8 @@ func Insert(filePath string, heading string, olp []string, entry string, prepend
 		}
 	}
 
-	insertionLine := -1
-	targetLevel := 0
+	var insertionLine int
+	var targetLevel int
 	// headingIndex is the line number of the target headline, or -1 if not applicable (root)
 	headingIndex := -1
 

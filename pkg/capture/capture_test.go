@@ -9,7 +9,9 @@ import (
 func TestInsert_Append(t *testing.T) {
 	tmpDir := t.TempDir()
 	file := filepath.Join(tmpDir, "test.org")
-	os.WriteFile(file, []byte("* Existing\n"), 0644)
+	if err := os.WriteFile(file, []byte("* Existing\n"), 0644); err != nil {
+		t.Fatalf("Failed to write initial file: %v", err)
+	}
 
 	err := Insert(file, "", nil, "* New\n", false)
 	if err != nil {
@@ -26,7 +28,9 @@ func TestInsert_Append(t *testing.T) {
 func TestInsert_Prepend(t *testing.T) {
 	tmpDir := t.TempDir()
 	file := filepath.Join(tmpDir, "test.org")
-	os.WriteFile(file, []byte("* Existing\n"), 0644)
+	if err := os.WriteFile(file, []byte("* Existing\n"), 0644); err != nil {
+		t.Fatalf("Failed to write initial file: %v", err)
+	}
 
 	err := Insert(file, "", nil, "* New\n", true)
 	if err != nil {
@@ -47,7 +51,9 @@ func TestInsert_Heading(t *testing.T) {
 ** Child 1
 * Other
 `
-	os.WriteFile(file, []byte(content), 0644)
+	if err := os.WriteFile(file, []byte(content), 0644); err != nil {
+		t.Fatalf("Failed to write initial file: %v", err)
+	}
 
 	// Insert under "Target". Should go after Child 1, before Other.
 	// Adjusted level: Target is 1. Child is 2. Entry is "* Entry" (1).
@@ -75,7 +81,9 @@ func TestInsert_Heading_Prepend(t *testing.T) {
 	content := `* Target
 ** Child 1
 `
-	os.WriteFile(file, []byte(content), 0644)
+	if err := os.WriteFile(file, []byte(content), 0644); err != nil {
+		t.Fatalf("Failed to write initial file: %v", err)
+	}
 
 	err := Insert(file, "Target", nil, "* Entry\n", true)
 	if err != nil {
@@ -100,7 +108,9 @@ func TestInsert_OLP(t *testing.T) {
 *** Level 3
 ** Other Level 2
 `
-	os.WriteFile(file, []byte(content), 0644)
+	if err := os.WriteFile(file, []byte(content), 0644); err != nil {
+		t.Fatalf("Failed to write initial file: %v", err)
+	}
 
 	// Insert under Level 1 -> Level 2
 	err := Insert(file, "", []string{"Level 1", "Level 2"}, "* Entry\n", false)
@@ -125,7 +135,9 @@ func TestInsert_OLP_NotFound(t *testing.T) {
 	file := filepath.Join(tmpDir, "test.org")
 	content := `* Level 1
 `
-	os.WriteFile(file, []byte(content), 0644)
+	if err := os.WriteFile(file, []byte(content), 0644); err != nil {
+		t.Fatalf("Failed to write initial file: %v", err)
+	}
 
 	err := Insert(file, "", []string{"Level 1", "NonExistent"}, "* Entry\n", false)
 	if err == nil {
@@ -140,7 +152,9 @@ func TestInsert_TextOnly(t *testing.T) {
   Description
 ** Child 1
 `
-	os.WriteFile(file, []byte(content), 0644)
+	if err := os.WriteFile(file, []byte(content), 0644); err != nil {
+		t.Fatalf("Failed to write initial file: %v", err)
+	}
 
 	// Insert text under "Target". Should go after Description, before Child 1.
 	err := Insert(file, "Target", nil, "New Text\n", false)
