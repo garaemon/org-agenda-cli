@@ -49,6 +49,12 @@ func TestFormat(t *testing.T) {
 			content:   "Diary",
 			wantRegex: `\d{4}: Diary`,
 		},
+		{
+			name:      "Location",
+			template:  "Link: %L",
+			content:   "Ignored",
+			wantRegex: `Link: \[\[file:.*\]\[.*\]\]`,
+		},
 	}
 
 	for _, tt := range tests {

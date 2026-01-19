@@ -59,6 +59,15 @@ func ParseHeadline(line string) *item.Item {
 		return nil
 	}
 
+	level := 0
+	for _, char := range line {
+		if char == '*' {
+			level++
+		} else {
+			break
+		}
+	}
+
 	status := matches[1]
 	title := matches[2]
 	tagsStr := matches[3]
@@ -72,6 +81,7 @@ func ParseHeadline(line string) *item.Item {
 
 	return &item.Item{
 		Title:  title,
+		Level:  level,
 		Status: status,
 		Tags:   tags,
 	}

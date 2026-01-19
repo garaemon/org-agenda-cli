@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/garaemon/org-agenda-cli/pkg/capture"
@@ -58,39 +57,12 @@ var captureCmd = &cobra.Command{
 		}
 
 		prepend := viper.GetBool("capture.prepend")
+		heading := viper.GetString("capture.heading")
+		olp := viper.GetStringSlice("capture.olp")
 
-		if prepend {
-			// Read existing content
-			existingContent, err := os.ReadFile(targetFile)
-			if err != nil && !os.IsNotExist(err) {
-				fmt.Printf("Error reading file: %v\n", err)
-				return
-			}
-
-			// Prepend new entry
-			newContent := entry
-			if len(existingContent) > 0 {
-				newContent += string(existingContent)
-			}
-
-			// Write back
-			if err := os.WriteFile(targetFile, []byte(newContent), 0644); err != nil {
-				fmt.Printf("Error writing to file: %v\n", err)
-				return
-			}
-		} else {
-			// Append to file
-			f, err := os.OpenFile(targetFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-			if err != nil {
-				fmt.Printf("Error opening file: %v\n", err)
-				return
-			}
-			defer f.Close()
-
-			if _, err := f.WriteString(entry); err != nil {
-				fmt.Printf("Error writing to file: %v\n", err)
-				return
-			}
+		if err := capture.Insert(targetFile, heading, olp, entry, prepend); err != nil {
+			fmt.Printf("Error capturing to file: %v\n", err)
+			return
 		}
 
 		fmt.Printf("Captured to %s\n", targetFile)
