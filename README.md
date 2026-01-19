@@ -52,26 +52,31 @@ You can manually edit the configuration file (usually `~/.config/org-agenda-cli/
 You can configure where and how notes are captured using the `capture` section in your `config.yaml`.
 
 ```yaml
-org_files:
-  - "/Users/user/org/todo.org"
-default_file: "/Users/user/org/inbox.org"
-
 capture:
   # The file to capture to (overrides default_file if set)
   default_file: "/Users/user/org/inbox.org"
-  
+
   # Format of the captured entry
   # %t: Timestamp <YYYY-MM-DD Mon HH:MM>
   # %c: The content you passed
   # %L: Link to the current working directory
+  # %Y: Year (2006)
+  # %y: Year (06)
+  # %m: Month (01)
+  # %d: Day (02)
+  # %H: Hour (15)
+  # %M: Minute (04)
+  # %S: Second (05)
+  # %A: Day of week (Monday)
+  # %a: Day of week (Mon)
   format: "* %t\n  %c\n  Link: %L"
-  
+
   # Optional: Insert under a specific heading
   # heading: "Inbox"
-  
+
   # Optional: Insert under a specific outline path (file+olp)
   # This takes precedence over 'heading'
-  # olp: 
+  # olp:
   #   - "Projects"
   #   - "Random"
 

@@ -195,3 +195,23 @@ func TestAdjustEntryLevel_Multiline(t *testing.T) {
 		t.Errorf("Expected %q, got %q", expected, res)
 	}
 }
+
+func TestInsert_ErrorMsg(t *testing.T) {
+	tmpDir := t.TempDir()
+	file := filepath.Join(tmpDir, "test.org")
+	content := `* Level 1
+`
+	if err := os.WriteFile(file, []byte(content), 0644); err != nil {
+		t.Fatalf("Failed to write initial file: %v", err)
+	}
+
+	err := Insert(file, "", []string{"Level 1", "NonExistent"}, "* Entry\n", false)
+	if err == nil {
+		t.Error("Expected error, got nil")
+	} else {
+		expectedMsg := "target headline 'Level 1 > NonExistent' not found in " + file
+		if err.Error() != expectedMsg {
+			t.Errorf("Expected error message %q, got %q", expectedMsg, err.Error())
+		}
+	}
+}

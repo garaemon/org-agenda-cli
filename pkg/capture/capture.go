@@ -59,7 +59,11 @@ func Insert(filePath string, heading string, olp []string, entry string, prepend
 	}
 
 	if insertionLine == -1 {
-		return fmt.Errorf("target not found")
+		target := heading
+		if len(olp) > 0 {
+			target = strings.Join(olp, " > ")
+		}
+		return fmt.Errorf("target headline '%s' not found in %s", target, filePath)
 	}
 
 	// Refine insertion point for text-only entries (append to immediate body)
