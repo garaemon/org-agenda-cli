@@ -5,8 +5,17 @@ import (
 )
 
 type Config struct {
-	OrgFiles    []string `mapstructure:"org_files"`
+	OrgFiles    []string      `mapstructure:"org_files"`
+	DefaultFile string        `mapstructure:"default_file"`
+	Capture     CaptureConfig `mapstructure:"capture"`
+}
+
+type CaptureConfig struct {
 	DefaultFile string   `mapstructure:"default_file"`
+	Heading     string   `mapstructure:"heading"`
+	OLP         []string `mapstructure:"olp"`
+	Format      string   `mapstructure:"format"`
+	Prepend     bool     `mapstructure:"prepend"`
 }
 
 func LoadConfig() (*Config, error) {

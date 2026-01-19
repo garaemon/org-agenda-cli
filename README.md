@@ -45,11 +45,43 @@ Remove an Org file from the configuration:
 org-agenda config remove-path ~/org/work.org
 ```
 
-Set a default file for adding new tasks:
+You can manually edit the configuration file (usually `~/.config/org-agenda-cli/config.yaml`) to set up capture templates.
 
-```bash
-# Edit ~/.config/org-agenda-cli/config.yaml
-default_file: "/home/user/org/inbox.org"
+#### Capture Configuration
+
+You can configure where and how notes are captured using the `capture` section in your `config.yaml`.
+
+```yaml
+capture:
+  # The file to capture to (overrides default_file if set)
+  default_file: "/Users/user/org/inbox.org"
+
+  # Format of the captured entry
+  # %t: Timestamp <YYYY-MM-DD Mon HH:MM>
+  # %c: The content you passed
+  # %L: Link to the current working directory
+  # %Y: Year (2006)
+  # %y: Year (06)
+  # %m: Month (01)
+  # %d: Day (02)
+  # %H: Hour (15)
+  # %M: Minute (04)
+  # %S: Second (05)
+  # %A: Day of week (Monday)
+  # %a: Day of week (Mon)
+  format: "* %t\n  %c\n  Link: %L"
+
+  # Optional: Insert under a specific heading
+  # heading: "Inbox"
+
+  # Optional: Insert under a specific outline path (file+olp)
+  # This takes precedence over 'heading'
+  # olp:
+  #   - "Projects"
+  #   - "Random"
+
+  # Optional: Prepend to the file or target heading instead of appending
+  prepend: false
 ```
 
 ### Agenda
@@ -88,6 +120,22 @@ Add a new TODO item to the default file:
 ```bash
 org-agenda todo add "Review project proposal" --tags "work,urgent" --schedule 2026-01-05
 ```
+
+### Capturing Notes
+
+Capture a quick note to your configured Org file:
+
+```bash
+org-agenda capture "Check this new tool out"
+```
+
+You can override the target file temporarily:
+
+```bash
+org-agenda capture "Meeting notes" --file ~/org/meetings.org
+```
+
+The capture command respects the `heading`, `olp`, and `prepend` settings in your `config.yaml`. Ideally, this allows you to set up a workflow similar to Emacs `org-capture`.
 
 ### Tags
 
