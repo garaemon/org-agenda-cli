@@ -23,7 +23,7 @@ func Format(template string, content string) string {
 
 	replacements := []string{
 		"%c", content,
-		"%t", now.Format("[2006-01-02 Mon 15:04]"),
+		"%t", now.Format("<2006-01-02 Mon 15:04>"),
 		"%Y", now.Format("2006"),
 		"%y", now.Format("06"),
 		"%m", now.Format("01"),

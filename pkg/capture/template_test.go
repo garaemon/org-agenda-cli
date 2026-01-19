@@ -29,13 +29,13 @@ func TestFormat(t *testing.T) {
 			name:      "Timestamp only",
 			template:  "Time: %t",
 			content:   "Ignored",
-			wantRegex: `Time: \[\d{4}-\d{2}-\d{2} \w{3} \d{2}:\d{2}\]`,
+			wantRegex: `Time: <\d{4}-\d{2}-\d{2} \w{3} \d{2}:\d{2}>`,
 		},
 		{
 			name:      "Both",
 			template:  "* %t %c",
 			content:   "My Note",
-			wantRegex: `\* \[\d{4}-\d{2}-\d{2} \w{3} \d{2}:\d{2}\] My Note`,
+			wantRegex: `\* <\d{4}-\d{2}-\d{2} \w{3} \d{2}:\d{2}> My Note`,
 		},
 		{
 			name:      "Extended Date Formats",
