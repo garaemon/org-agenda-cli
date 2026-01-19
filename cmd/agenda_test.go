@@ -26,8 +26,8 @@ func TestAgendaRecursive(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	today := time.Now().Format("2006-01-02")
-	dayName := time.Now().Format("Mon")
+	today := "2026-01-18"
+	dayName := "Sun"
 	timestamp := fmt.Sprintf("<%s %s>", today, dayName)
 
 	rootContent := fmt.Sprintf("* TODO Root Task\nSCHEDULED: %s\n", timestamp)
@@ -48,7 +48,7 @@ func TestAgendaRecursive(t *testing.T) {
 	viper.Set("org_files", []string{tmpDir})
 
 	// Reset flags just in case
-	agendaDate = ""
+	agendaDate = "2026-01-18"
 	agendaRange = "day"
 	agendaTui = false
 
@@ -93,14 +93,19 @@ func TestAgendaRangeMonth(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	// Create a task scheduled for today + 20 days
-	future := time.Now().AddDate(0, 0, 20)
+	// Use a fixed date for deterministic testing
+	now, _ := time.Parse("2006-01-02", "2026-01-18")
+
+	// Create a task scheduled for 2026-01-18 + 5 days = 2026-01-23
+	// This will be within the month range (2026-01-01 to 2026-02-01)
+	future := now.AddDate(0, 0, 5)
 	futureDate := future.Format("2006-01-02")
 	futureDayName := future.Format("Mon")
 	timestamp := fmt.Sprintf("<%s %s>", futureDate, futureDayName)
 
-	// Create a task scheduled for today + 40 days (should not be included)
-	farFuture := time.Now().AddDate(0, 0, 40)
+	// Create a task scheduled for 2026-01-18 + 40 days = 2026-02-27
+	// This should be outside the month range (2026-01-01 to 2026-02-01)
+	farFuture := now.AddDate(0, 0, 40)
 	farFutureDate := farFuture.Format("2006-01-02")
 	farFutureDayName := farFuture.Format("Mon")
 	farTimestamp := fmt.Sprintf("<%s %s>", farFutureDate, farFutureDayName)
@@ -118,7 +123,7 @@ func TestAgendaRangeMonth(t *testing.T) {
 	viper.Set("org_files", []string{tmpDir})
 
 	// Reset flags
-	agendaDate = ""
+	agendaDate = "2026-01-18"
 	agendaRange = "month"
 	agendaTui = false
 
