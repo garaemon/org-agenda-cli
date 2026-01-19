@@ -86,7 +86,7 @@ func Insert(filePath string, heading string, olp []string, entry string, prepend
 	// Insert
 	newLines := make([]string, 0, len(lines)+1)
 	newLines = append(newLines, lines[:finalInsertionLine]...)
-	
+
 	newLines = append(newLines, adjustedEntry)
 	newLines = append(newLines, lines[finalInsertionLine:]...)
 
@@ -104,7 +104,7 @@ func findHeadingInsertionPoint(lines []string, heading string) (int, int, int) {
 	for i, line := range lines {
 		item := parser.ParseHeadline(line)
 		if item != nil && item.Title == heading {
-			// Found. 
+			// Found.
 			return i, findEndOfSubtree(lines, i, item.Level), item.Level
 		}
 	}
@@ -216,7 +216,7 @@ func adjustEntryLevel(entry string, targetLevel int) string {
 				newLines = append(newLines, newStars+line[firstSpace:])
 			} else {
 				// Fallback, shouldn't happen for valid headlines
-				newLines = append(newLines, newStars+" "+line[item.Level:]) 
+				newLines = append(newLines, newStars+" "+line[item.Level:])
 			}
 		} else {
 			newLines = append(newLines, line)

@@ -187,11 +187,11 @@ func TestAdjustEntryLevel(t *testing.T) {
 }
 
 func TestAdjustEntryLevel_Multiline(t *testing.T) {
-    entry := "* Item\n** SubItem\n  Body"
-    // Shift +1
-    res := adjustEntryLevel(entry, 2)
-    expected := "** Item\n*** SubItem\n  Body"
-    if res != expected {
-        t.Errorf("Expected %q, got %q", expected, res)
-    }
+	entry := "* Item\n** SubItem\n  Body"
+	// Shift +1
+	res := adjustEntryLevel(entry, 2)
+	expected := "** Item\n*** SubItem\n  Body"
+	if res != expected {
+		t.Errorf("Expected %q, got %q", expected, res)
+	}
 }
