@@ -131,7 +131,8 @@ func TestPaging(t *testing.T) {
 }
 
 func TestPagingMonth(t *testing.T) {
-	now := time.Now()
+	// Use fixed date to avoid flaky test at the end of month
+	now := time.Date(2026, 1, 15, 0, 0, 0, 0, time.UTC)
 	// Item 1: today
 	// Item 2: 32 days later (outside first month)
 	item2Date := now.AddDate(0, 0, 32)
