@@ -184,3 +184,70 @@ func TestConfigAddPath(t *testing.T) {
 		}
 	})
 }
+
+func TestConfigList(t *testing.T) {
+	// Setup temporary config file
+	tmpConfigDir, err := os.MkdirTemp("", "configtest")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpConfigDir)
+
+	configPath := filepath.Join(tmpConfigDir, "config.yaml")
+
+	t.Run("List with default_file", func(t *testing.T) {
+		viper.Reset()
+		viper.SetConfigFile(configPath)
+		viper.Set("default_file", "inbox.org")
+		viper.Set("org_files", []string{"test.org"})
+
+		// Capture stdout
+		old := os.Stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		configListCmd.Run(configListCmd, []string{})
+
+		// Restore stdout
+		w.Close()
+		os.Stdout = old
+
+		var buf bytes.Buffer
+		if _, err := io.Copy(&buf, r); err != nil {
+			t.Fatal(err)
+		}
+		output := buf.String()
+
+		if !strings.Contains(output, "Capture Default File: inbox.org") {
+			t.Errorf("Expected 'Capture Default File: inbox.org' in output, got: %s", output)
+		}
+	})
+
+	t.Run("List with capture.default_file", func(t *testing.T) {
+		viper.Reset()
+		viper.SetConfigFile(configPath)
+		viper.Set("capture.default_file", "capture.org")
+		viper.Set("default_file", "inbox.org")
+
+		// Capture stdout
+		old := os.Stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		configListCmd.Run(configListCmd, []string{})
+
+		// Restore stdout
+		w.Close()
+		os.Stdout = old
+
+		var buf bytes.Buffer
+		if _, err := io.Copy(&buf, r); err != nil {
+			t.Fatal(err)
+		}
+		output := buf.String()
+
+		if !strings.Contains(output, "Capture Default File: capture.org") {
+			t.Errorf("Expected 'Capture Default File: capture.org' in output, got: %s", output)
+		}
+	})
+}

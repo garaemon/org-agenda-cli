@@ -25,7 +25,11 @@ var configListCmd = &cobra.Command{
 		for _, f := range orgFiles {
 			fmt.Printf("  - %s\n", f)
 		}
-		fmt.Printf("Default File: %s\n", viper.GetString("default_file"))
+		captureDefault := viper.GetString("capture.default_file")
+		if captureDefault == "" {
+			captureDefault = viper.GetString("default_file")
+		}
+		fmt.Printf("Capture Default File: %s\n", captureDefault)
 		fmt.Printf("Config file used: %s\n", viper.ConfigFileUsed())
 	},
 }
