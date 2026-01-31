@@ -15,10 +15,11 @@ import (
 )
 
 var (
-	agendaRange string
-	agendaDate  string
-	agendaTag   string
-	agendaTui   bool
+	agendaRange         string
+	agendaDate          string
+	agendaTag           string
+	agendaTui           bool
+	agendaNoInteractive bool
 )
 
 // agendaCmd represents the agenda command
@@ -60,8 +61,10 @@ var agendaCmd = &cobra.Command{
 			}
 		}
 
+		useTui := agendaTui && !agendaNoInteractive
+
 		orgFiles := config.ResolveOrgFiles(paths)
-		if !agendaTui {
+		if !useTui {
 			fmt.Printf("Agenda for %s to %s:\n", start.Format("2006-01-02"), end.Format("2006-01-02"))
 		}
 
@@ -73,7 +76,7 @@ var agendaCmd = &cobra.Command{
 			}
 
 			items := parser.ParseString(string(content), file)
-			if agendaTui {
+			if useTui {
 				allItems = append(allItems, items...)
 			} else {
 				filtered := agenda.FilterItemsByRange(items, start, end)
@@ -81,7 +84,7 @@ var agendaCmd = &cobra.Command{
 			}
 		}
 
-		if agendaTui {
+		if useTui {
 			err := tui.Run(allItems, start, agendaRange, "")
 			if err != nil {
 				fmt.Println(err)
@@ -121,5 +124,7 @@ func init() {
 	agendaCmd.Flags().StringVar(&agendaRange, "range", "day", "Specify the display range (day|week|month)")
 	agendaCmd.Flags().StringVar(&agendaDate, "date", "", "Specify the reference date (YYYY-MM-DD, default: today)")
 	agendaCmd.Flags().StringVar(&agendaTag, "tag", "", "Filter items by a specific tag")
-	agendaCmd.Flags().BoolVar(&agendaTui, "tui", false, "Enable interactive TUI mode")
+	agendaCmd.Flags().BoolVar(&agendaTui, "tui", true, "Enable interactive TUI mode")
+	agendaCmd.Flags().BoolVar(&agendaNoInteractive, "no-interactive", false, "Disable interactive TUI mode")
+	agendaCmd.Flags().BoolVar(&agendaNoInteractive, "no-pager", false, "Disable interactive TUI mode")
 }

@@ -35,6 +35,9 @@ func TestTodoList(t *testing.T) {
 	viper.Reset()
 	viper.Set("org_files", []string{tmpfile.Name()})
 
+	// Disable TUI for testing
+	todoNoInteractive = true
+
 	// Capture stdout
 	old := os.Stdout
 	r, w, _ := os.Pipe()
