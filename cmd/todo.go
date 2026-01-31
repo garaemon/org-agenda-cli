@@ -14,13 +14,14 @@ import (
 )
 
 var (
-	todoStatus   string
-	todoTag      string
-	todoFile     string
-	todoSchedule string
-	todoDeadline string
-	todoTags     string
-	todoTui      bool
+	todoStatus        string
+	todoTag           string
+	todoFile          string
+	todoSchedule      string
+	todoDeadline      string
+	todoTags          string
+	todoTui           bool
+	todoNoInteractive bool
 )
 
 // todoCmd represents the todo command
@@ -89,7 +90,9 @@ var todoListCmd = &cobra.Command{
 			}
 		}
 
-		if todoTui {
+		useTui := todoTui && !todoNoInteractive
+
+		if useTui {
 			if err := tui.Run(allItems, time.Time{}, "", "Todo List"); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
@@ -180,7 +183,9 @@ func init() {
 
 	todoListCmd.Flags().StringVar(&todoStatus, "status", "", "Filter by status (TODO|WAITING|DONE)")
 	todoListCmd.Flags().StringVar(&todoTag, "tag", "", "Filter by tag")
-	todoListCmd.Flags().BoolVar(&todoTui, "tui", false, "Enable interactive TUI mode")
+	todoListCmd.Flags().BoolVar(&todoTui, "tui", true, "Enable interactive TUI mode")
+	todoListCmd.Flags().BoolVar(&todoNoInteractive, "no-interactive", false, "Disable interactive TUI mode")
+	todoListCmd.Flags().BoolVar(&todoNoInteractive, "no-pager", false, "Disable interactive TUI mode")
 
 	todoAddCmd.Flags().StringVar(&todoFile, "file", "", "Specify the target file")
 	todoAddCmd.Flags().StringVar(&todoSchedule, "schedule", "", "Set a SCHEDULED timestamp")
