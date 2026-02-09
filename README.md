@@ -14,7 +14,7 @@ A CLI tool to parse Emacs Org-mode files and manage agendas and TODO lists direc
 ### Using go install
 
 ```bash
-go install github.com/garaemon/devgo@latest
+go install github.com/garaemon/org-agenda-cli@latest
 ```
 
 ### Building from source
