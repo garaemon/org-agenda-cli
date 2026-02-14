@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -9,7 +10,7 @@ import (
 )
 
 var (
-	headlineRegex  = regexp.MustCompile(`^\*+\s+(?:(TODO|DONE|WAITING)\s+)?(.*?)(?:\s+:(.*):)?\s*$`)
+	headlineRegex  = regexp.MustCompile(fmt.Sprintf(`^\*+\s+(?:(%s|%s|%s)\s+)?(.*?)(?:\s+:(.*):)?\s*$`, item.StatusTodo, item.StatusDone, item.StatusWaiting))
 	timestampRegex = regexp.MustCompile(`<(\d{4}-\d{2}-\d{2})[^>]*>`)
 )
 
