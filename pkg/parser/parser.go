@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	headlineRegex  = regexp.MustCompile(fmt.Sprintf(`^\*+\s+(?:(%s|%s|%s)\s+)?(.*?)(?:\s+:(.*):)?\s*$`, item.StatusTodo, item.StatusDone, item.StatusWaiting))
+	headlineRegex  = regexp.MustCompile(fmt.Sprintf(`^\*+\s+(?:(%s|%s|%s)\s+)?(?:\[#([A-Za-z0-9])\]\s+)?(.*?)(?:\s+:(.*):)?\s*$`, item.StatusTodo, item.StatusDone, item.StatusWaiting))
 	timestampRegex = regexp.MustCompile(`<(\d{4}-\d{2}-\d{2})[^>]*>`)
 )
 
@@ -70,8 +70,9 @@ func ParseHeadline(line string) *item.Item {
 	}
 
 	status := matches[1]
-	title := matches[2]
-	tagsStr := matches[3]
+	priority := matches[2]
+	title := matches[3]
+	tagsStr := matches[4]
 
 	var tags []string
 	if tagsStr != "" {
@@ -81,10 +82,11 @@ func ParseHeadline(line string) *item.Item {
 	}
 
 	return &item.Item{
-		Title:  title,
-		Level:  level,
-		Status: status,
-		Tags:   tags,
+		Title:    title,
+		Level:    level,
+		Status:   status,
+		Priority: priority,
+		Tags:     tags,
 	}
 }
 
