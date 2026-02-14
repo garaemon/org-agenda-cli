@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/garaemon/org-agenda-cli/pkg/config"
@@ -169,7 +170,67 @@ var todoDoneCmd = &cobra.Command{
 	Short: "Mark a task as DONE",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("todo done called for: %s\n", args[0])
+		arg := args[0]
+		pos, err := parser.ParseFilePosition(arg)
+		if err != nil {
+			fmt.Printf("Error parsing argument: %v\n", err)
+			return
+		}
+
+		filePath := pos.FilePath
+		lineIdx := pos.Line
+
+		// Read file content
+		content, err := os.ReadFile(filePath)
+		if err != nil {
+			fmt.Printf("Error reading file %s: %v\n", filePath, err)
+			return
+		}
+
+		lines := strings.Split(string(content), "\n")
+		if lineIdx < 1 || lineIdx > len(lines) {
+			fmt.Printf("Line number %d is out of range for file %s\n", lineIdx, filePath)
+			return
+		}
+
+		// Adjust for 0-based index
+		targetLine := lines[lineIdx-1]
+
+		// Check if it's a TODO item
+		// We expect a line starting with * and containing TODO
+		// Regex might be safer, but let's try simple replacement first as per plan "Change TODO to DONE"
+		// However, we should be careful not to replace "TODO" in the title.
+		// The format is usually "* TODO Title..." or "* TODO [...]"
+		// Let's use the parser's regex logic or similar string manipulation.
+		// A simple approach: Replace first occurrence of " TODO " with " DONE " after the initial asterisks.
+
+		if !strings.Contains(targetLine, item.StatusTodo) {
+			fmt.Printf("Line does not appear to be a %s item.\n", item.StatusTodo)
+			return
+		}
+
+		// more robust replacement: look for "* TODO" or "* ... TODO"
+		// But usually it is "* TODO" or "** TODO".
+		// Let's replace " TODO " with " DONE ".
+		// If the task status is immediately after stars, it might be "* TODO".
+
+		newLine := strings.Replace(targetLine, " "+item.StatusTodo+" ", " "+item.StatusDone+" ", 1)
+
+		// If no change happened, maybe it's because of strict spacing?
+		if newLine == targetLine {
+			fmt.Printf("Could not find ' %s ' pattern to replace.\n", item.StatusTodo)
+			return
+		}
+
+		lines[lineIdx-1] = newLine
+		newContent := strings.Join(lines, "\n")
+
+		if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
+			fmt.Printf("Error writing file %s: %v\n", filePath, err)
+			return
+		}
+
+		fmt.Printf("Marked task as DONE: %s\n", filePath)
 	},
 }
 

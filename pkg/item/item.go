@@ -2,6 +2,12 @@ package item
 
 import "time"
 
+const (
+	StatusTodo    = "TODO"
+	StatusDone    = "DONE"
+	StatusWaiting = "WAITING"
+)
+
 // Item represents an entry in an Org file.
 type Item struct {
 	Title      string
