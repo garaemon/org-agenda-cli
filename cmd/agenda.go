@@ -45,9 +45,10 @@ var agendaCmd = &cobra.Command{
 		start = agenda.AdjustDate(start, agendaRange)
 
 		end := start
-		if agendaRange == "week" {
+		switch agendaRange {
+		case "week":
 			end = start.AddDate(0, 0, 6)
-		} else if agendaRange == "month" {
+		case "month":
 			end = start.AddDate(0, 1, 0)
 		}
 

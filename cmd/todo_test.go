@@ -142,11 +142,11 @@ func TestTodoListPriority(t *testing.T) {
 	todoListCmd.Run(todoListCmd, []string{})
 
 	// Restore stdout
-	w.Close()
+	_ = w.Close()
 	os.Stdout = old
 
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	_, _ = io.Copy(&buf, r)
 	output := buf.String()
 
 	// Verify output
@@ -182,7 +182,7 @@ func TestTodoListNoColor(t *testing.T) {
 	if _, err := tmpfile.Write([]byte(content)); err != nil {
 		t.Fatal(err)
 	}
-	tmpfile.Close()
+	_ = tmpfile.Close()
 
 	viper.Reset()
 	viper.Set("org_files", []string{tmpfile.Name()})
@@ -197,11 +197,11 @@ func TestTodoListNoColor(t *testing.T) {
 	// Run command
 	todoListCmd.Run(todoListCmd, []string{})
 
-	w.Close()
+	_ = w.Close()
 	os.Stdout = old
 
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	_, _ = io.Copy(&buf, r)
 	output := buf.String()
 
 	// Verify output
@@ -228,7 +228,7 @@ func TestTodoListTags(t *testing.T) {
 	if _, err := tmpfile.Write([]byte(content)); err != nil {
 		t.Fatal(err)
 	}
-	tmpfile.Close()
+	_ = tmpfile.Close()
 
 	viper.Reset()
 	viper.Set("org_files", []string{tmpfile.Name()})
@@ -243,11 +243,11 @@ func TestTodoListTags(t *testing.T) {
 	// Run command
 	todoListCmd.Run(todoListCmd, []string{})
 
-	w.Close()
+	_ = w.Close()
 	os.Stdout = old
 
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	_, _ = io.Copy(&buf, r)
 	output := buf.String()
 
 	// Verify output
@@ -270,7 +270,7 @@ func TestTodoListJSON(t *testing.T) {
 	if _, err := tmpfile.Write([]byte(content)); err != nil {
 		t.Fatal(err)
 	}
-	tmpfile.Close()
+	_ = tmpfile.Close()
 
 	viper.Reset()
 	viper.Set("org_files", []string{tmpfile.Name()})
@@ -286,11 +286,11 @@ func TestTodoListJSON(t *testing.T) {
 	// Run command
 	todoListCmd.Run(todoListCmd, []string{})
 
-	w.Close()
+	_ = w.Close()
 	os.Stdout = old
 
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	_, _ = io.Copy(&buf, r)
 	output := buf.String()
 
 	// Verify output is valid JSON

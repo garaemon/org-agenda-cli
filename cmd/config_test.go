@@ -17,7 +17,9 @@ func TestConfigRemovePath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpConfigDir)
+	defer func() {
+		_ = os.RemoveAll(tmpConfigDir)
+	}()
 
 	configPath := filepath.Join(tmpConfigDir, "config.yaml")
 
@@ -43,7 +45,7 @@ func TestConfigRemovePath(t *testing.T) {
 		configRemovePathCmd.Run(configRemovePathCmd, []string{"test1.org"})
 
 		// Restore stdout
-		w.Close()
+		_ = w.Close()
 		os.Stdout = old
 
 		var buf bytes.Buffer
@@ -82,7 +84,7 @@ func TestConfigRemovePath(t *testing.T) {
 		configRemovePathCmd.Run(configRemovePathCmd, []string{"nonexistent.org"})
 
 		// Restore stdout
-		w.Close()
+		_ = w.Close()
 		os.Stdout = old
 
 		var buf bytes.Buffer
@@ -109,7 +111,9 @@ func TestConfigAddPath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpConfigDir)
+	defer func() {
+		_ = os.RemoveAll(tmpConfigDir)
+	}()
 
 	configPath := filepath.Join(tmpConfigDir, "config.yaml")
 
@@ -132,7 +136,7 @@ func TestConfigAddPath(t *testing.T) {
 		configAddPathCmd.Run(configAddPathCmd, []string{"test1.org"})
 
 		// Restore stdout
-		w.Close()
+		_ = w.Close()
 		os.Stdout = old
 
 		var buf bytes.Buffer
@@ -164,7 +168,7 @@ func TestConfigAddPath(t *testing.T) {
 		configAddPathCmd.Run(configAddPathCmd, []string{"test1.org"})
 
 		// Restore stdout
-		w.Close()
+		_ = w.Close()
 		os.Stdout = old
 
 		var buf bytes.Buffer
@@ -191,7 +195,9 @@ func TestConfigList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpConfigDir)
+	defer func() {
+		_ = os.RemoveAll(tmpConfigDir)
+	}()
 
 	configPath := filepath.Join(tmpConfigDir, "config.yaml")
 
@@ -209,7 +215,7 @@ func TestConfigList(t *testing.T) {
 		configListCmd.Run(configListCmd, []string{})
 
 		// Restore stdout
-		w.Close()
+		_ = w.Close()
 		os.Stdout = old
 
 		var buf bytes.Buffer
@@ -237,7 +243,7 @@ func TestConfigList(t *testing.T) {
 		configListCmd.Run(configListCmd, []string{})
 
 		// Restore stdout
-		w.Close()
+		_ = w.Close()
 		os.Stdout = old
 
 		var buf bytes.Buffer

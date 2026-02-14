@@ -91,13 +91,14 @@ func (m *Model) refreshList() {
 
 	start := m.currentDate
 	end := start
-	if m.viewRange == "week" {
+	switch m.viewRange {
+	case "week":
 		end = start.AddDate(0, 0, 6)
-	} else if m.viewRange == "month" {
+	case "month":
 		y, mm, _ := start.Date()
 		start = time.Date(y, mm, 1, 0, 0, 0, 0, start.Location())
 		end = start.AddDate(0, 1, 0)
-	} else {
+	default:
 		// Default to day
 		end = start
 	}
@@ -144,23 +145,25 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 			case "n":
-				if m.viewRange == "week" {
+				switch m.viewRange {
+				case "week":
 					m.currentDate = m.currentDate.AddDate(0, 0, 7)
-				} else if m.viewRange == "month" {
+				case "month":
 					y, mm, _ := m.currentDate.Date()
 					m.currentDate = time.Date(y, mm, 1, 0, 0, 0, 0, m.currentDate.Location()).AddDate(0, 1, 0)
-				} else {
+				default:
 					m.currentDate = m.currentDate.AddDate(0, 0, 1)
 				}
 				m.refreshList()
 				return m, nil
 			case "p":
-				if m.viewRange == "week" {
+				switch m.viewRange {
+				case "week":
 					m.currentDate = m.currentDate.AddDate(0, 0, -7)
-				} else if m.viewRange == "month" {
+				case "month":
 					y, mm, _ := m.currentDate.Date()
 					m.currentDate = time.Date(y, mm, 1, 0, 0, 0, 0, m.currentDate.Location()).AddDate(0, -1, 0)
-				} else {
+				default:
 					m.currentDate = m.currentDate.AddDate(0, 0, -1)
 				}
 				m.refreshList()
