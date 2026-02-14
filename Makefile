@@ -11,6 +11,10 @@ build:
 test:
 	go test ./...
 
+.PHONY: coverage
+coverage:
+	go test -coverprofile=coverage.out ./...
+
 .PHONY: clean
 clean:
 	rm -f $(BINARY_NAME)
