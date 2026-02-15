@@ -79,6 +79,36 @@ func TestParseLine(t *testing.T) {
 				Tags:   []string{},
 			},
 		},
+		{
+			name: "Item with priority A",
+			line: "* TODO [#A] Important Task",
+			expected: &item.Item{
+				Title:    "Important Task",
+				Status:   "TODO",
+				Priority: "A",
+				Tags:     []string{},
+			},
+		},
+		{
+			name: "Item with priority B and tags",
+			line: "* TODO [#B] Medium Task :tag1:",
+			expected: &item.Item{
+				Title:    "Medium Task",
+				Status:   "TODO",
+				Priority: "B",
+				Tags:     []string{"tag1"},
+			},
+		},
+		{
+			name: "Item with priority C",
+			line: "* TODO [#C] Low Task",
+			expected: &item.Item{
+				Title:    "Low Task",
+				Status:   "TODO",
+				Priority: "C",
+				Tags:     []string{},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -89,6 +119,9 @@ func TestParseLine(t *testing.T) {
 			}
 			if got.Status != tt.expected.Status {
 				t.Errorf("ParseHeadline() Status = %v, want %v", got.Status, tt.expected.Status)
+			}
+			if got.Priority != tt.expected.Priority {
+				t.Errorf("ParseHeadline() Priority = %v, want %v", got.Priority, tt.expected.Priority)
 			}
 			if !reflect.DeepEqual(got.Tags, tt.expected.Tags) {
 				t.Errorf("ParseHeadline() Tags = %v, want %v", got.Tags, tt.expected.Tags)

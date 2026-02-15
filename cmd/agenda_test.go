@@ -19,7 +19,9 @@ func TestAgendaRecursive(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		_ = os.RemoveAll(tmpDir)
+	}()
 
 	nestedDir := filepath.Join(tmpDir, "nested")
 	if err := os.MkdirAll(nestedDir, 0755); err != nil {
@@ -91,7 +93,9 @@ func TestAgendaRangeMonth(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		_ = os.RemoveAll(tmpDir)
+	}()
 
 	// Use a fixed date for deterministic testing
 	now, _ := time.Parse("2006-01-02", "2026-01-18")

@@ -1,11 +1,13 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/garaemon/org-agenda-cli/pkg/config"
 	"github.com/garaemon/org-agenda-cli/pkg/item"
 	"github.com/garaemon/org-agenda-cli/pkg/parser"
@@ -21,7 +23,10 @@ var (
 	todoSchedule      string
 	todoDeadline      string
 	todoTags          string
+	todoPriority      string
 	todoNoInteractive bool
+	todoNoColor       bool
+	todoJSON          bool
 )
 
 // todoCmd represents the todo command
@@ -90,6 +95,16 @@ var todoListCmd = &cobra.Command{
 			}
 		}
 
+		if todoJSON {
+			encoder := json.NewEncoder(os.Stdout)
+			encoder.SetIndent("", "  ")
+			if err := encoder.Encode(allItems); err != nil {
+				fmt.Printf("Error encoding JSON: %v\n", err)
+				os.Exit(1)
+			}
+			return
+		}
+
 		useTui := !todoNoInteractive
 
 		if useTui {
@@ -100,12 +115,63 @@ var todoListCmd = &cobra.Command{
 			return
 		}
 
+		// Define styles
+		var (
+			stylePriorityA = lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Bold(true) // Red
+			stylePriorityB = lipgloss.NewStyle().Foreground(lipgloss.Color("220"))            // Yellow
+			stylePriorityC = lipgloss.NewStyle().Foreground(lipgloss.Color("46"))             // Green
+			styleStatus    = lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Bold(true) // Pink
+			styleFile      = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))            // Grey
+		)
+
 		for _, item := range allItems {
 			statusStr := item.Status
 			if statusStr == "" {
 				statusStr = "NONE"
 			}
-			fmt.Printf("[%s] %s (%s:%d)\n", statusStr, item.Title, item.FilePath, item.LineNumber)
+
+			priorityStr := ""
+			if item.Priority != "" {
+				priorityStr = fmt.Sprintf("[#%s] ", item.Priority)
+			}
+
+			titleStr := item.Title
+			fileStr := fmt.Sprintf("(%s:%d)", item.FilePath, item.LineNumber)
+
+			line := ""
+			if todoNoColor {
+				line = fmt.Sprintf("[%s] %s%s %s", statusStr, priorityStr, titleStr, fileStr)
+			} else {
+				// Apply colors
+				pStyle := lipgloss.NewStyle()
+				switch item.Priority {
+				case "A":
+					pStyle = stylePriorityA
+				case "B":
+					pStyle = stylePriorityB
+				case "C":
+					pStyle = stylePriorityC
+				}
+
+				sStr := styleStatus.Render("[" + statusStr + "]")
+				pStr := pStyle.Render(priorityStr)
+				fStr := styleFile.Render(fileStr)
+
+				line = fmt.Sprintf("%s %s%s %s", sStr, pStr, titleStr, fStr)
+			}
+
+			// Append tags
+			if len(item.Tags) > 0 {
+				tagsStr := fmt.Sprintf(" :%s:", strings.Join(item.Tags, ":"))
+				if todoNoColor {
+					line += tagsStr
+				} else {
+					// Use standard cyan (6) instead of 86 for better compatibility
+					line += lipgloss.NewStyle().Foreground(lipgloss.Color("6")).Render(tagsStr)
+				}
+			}
+
+			fmt.Println(line)
 		}
 	},
 }
@@ -144,6 +210,13 @@ var todoAddCmd = &cobra.Command{
 		}()
 
 		content := fmt.Sprintf("* TODO %s", title)
+		if todoPriority != "" {
+			// Validate priority? Org-mode allows any character, but A-C is standard.
+			// For now, just insert it.
+			// Format: * TODO [#A] Title
+			content = fmt.Sprintf("* TODO [#%s] %s", todoPriority, title)
+		}
+
 		if todoTags != "" {
 			content += fmt.Sprintf(" :%s:", todoTags)
 		}
@@ -243,11 +316,13 @@ func init() {
 
 	todoListCmd.Flags().StringVar(&todoStatus, "status", "", "Filter by status (TODO|WAITING|DONE)")
 	todoListCmd.Flags().StringVar(&todoTag, "tag", "", "Filter by tag")
-	todoListCmd.Flags().BoolVar(&todoNoInteractive, "no-interactive", false, "Disable interactive TUI mode")
 	todoListCmd.Flags().BoolVar(&todoNoInteractive, "no-pager", false, "Disable interactive TUI mode")
+	todoListCmd.Flags().BoolVar(&todoNoColor, "no-color", false, "Disable colored output")
+	todoListCmd.Flags().BoolVar(&todoJSON, "json", false, "Output in JSON format")
 
 	todoAddCmd.Flags().StringVar(&todoFile, "file", "", "Specify the target file")
 	todoAddCmd.Flags().StringVar(&todoSchedule, "schedule", "", "Set a SCHEDULED timestamp")
 	todoAddCmd.Flags().StringVar(&todoDeadline, "deadline", "", "Set a DEADLINE timestamp")
 	todoAddCmd.Flags().StringVar(&todoTags, "tags", "", "Set tags (comma-separated)")
+	todoAddCmd.Flags().StringVar(&todoPriority, "priority", "", "Set priority (A, B, C)")
 }

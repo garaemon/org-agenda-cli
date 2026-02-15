@@ -13,7 +13,9 @@ func TestResolveOrgFiles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		_ = os.RemoveAll(tmpDir)
+	}()
 
 	// Define files to create
 	filesToCreate := []string{
@@ -63,7 +65,9 @@ func TestResolveOrgFilesWithMultiplePaths(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		_ = os.RemoveAll(tmpDir)
+	}()
 
 	file1 := filepath.Join(tmpDir, "file1.org")
 	file2 := filepath.Join(tmpDir, "file2.org")

@@ -10,13 +10,14 @@ const (
 
 // Item represents an entry in an Org file.
 type Item struct {
-	Title      string
-	Level      int
-	Status     string // "TODO", "DONE", "WAITING", etc.
-	Tags       []string
-	Scheduled  *time.Time
-	Deadline   *time.Time
-	FilePath   string
-	LineNumber int
-	RawContent string // Body content
+	Title      string     `json:"title"`
+	Level      int        `json:"level"`
+	Status     string     `json:"status"`
+	Priority   string     `json:"priority,omitempty"`
+	Tags       []string   `json:"tags,omitempty"`
+	Scheduled  *time.Time `json:"scheduled,omitempty"`
+	Deadline   *time.Time `json:"deadline,omitempty"`
+	FilePath   string     `json:"filePath"`
+	LineNumber int        `json:"lineNumber"`
+	RawContent string     `json:"rawContent,omitempty"`
 }
