@@ -145,6 +145,35 @@ List all unique tags across all configured Org files:
 org-agenda tags
 ```
 
+## MCP (Model Context Protocol) Integration
+
+This tool supports the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), allowing AI assistants like Claude to interact with your agenda and TODOs.
+
+### Usage with Claude Desktop
+
+Add the following configuration to your `claude_desktop_config.json` (typically located at `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+
+```json
+{
+  "mcpServers": {
+    "org-agenda": {
+      "command": "org-agenda-cli",
+      "args": ["serve"]
+    }
+  }
+}
+```
+
+Make sure `org-agenda-cli` is in your system PATH, or provide the absolute path to the binary.
+
+### Usage with Claude Code
+
+To use with `claude` CLI, run:
+
+```bash
+claude mcp add org-agenda -- org-agenda-cli serve
+```
+
 ## Development
 
 ### Prerequisites
