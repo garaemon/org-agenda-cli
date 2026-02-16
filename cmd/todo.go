@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/garaemon/org-agenda-cli/pkg/agenda"
 	"github.com/garaemon/org-agenda-cli/pkg/config"
 	"github.com/garaemon/org-agenda-cli/pkg/item"
 	"github.com/garaemon/org-agenda-cli/pkg/parser"
@@ -27,6 +28,8 @@ var (
 	todoNoInteractive bool
 	todoNoColor       bool
 	todoJSON          bool
+	todoSortBy        string
+	todoDesc          bool
 )
 
 // todoCmd represents the todo command
@@ -44,14 +47,20 @@ var todoListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Display a list of TODO items",
 	Run: func(cmd *cobra.Command, args []string) {
-		paths := viper.GetStringSlice("org_files")
-		if len(paths) == 0 {
-			// Fallback for testing if no config exists
-			if _, err := os.Stat("sample.org"); err == nil {
-				paths = []string{"sample.org"}
-			} else {
-				fmt.Println("No org files configured. Use 'org-agenda config add-path <path>' to add one.")
-				return
+
+		var paths []string
+		if todoFile != "" {
+			paths = []string{todoFile}
+		} else {
+			paths = viper.GetStringSlice("org_files")
+			if len(paths) == 0 {
+				// Fallback for testing if no config exists
+				if _, err := os.Stat("sample.org"); err == nil {
+					paths = []string{"sample.org"}
+				} else {
+					fmt.Println("No org files configured. Use 'org-agenda config add-path <path>' to add one.")
+					return
+				}
 			}
 		}
 
@@ -95,6 +104,10 @@ var todoListCmd = &cobra.Command{
 			}
 		}
 
+		if todoSortBy != "" {
+			agenda.SortItems(allItems, todoSortBy, todoDesc)
+		}
+
 		if todoJSON {
 			encoder := json.NewEncoder(os.Stdout)
 			encoder.SetIndent("", "  ")
@@ -108,7 +121,7 @@ var todoListCmd = &cobra.Command{
 		useTui := !todoNoInteractive
 
 		if useTui {
-			if err := tui.Run(allItems, time.Time{}, "", "Todo List"); err != nil {
+			if err := tui.Run(allItems, time.Time{}, "", "Todo List", todoSortBy, todoDesc); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
@@ -319,6 +332,9 @@ func init() {
 	todoListCmd.Flags().BoolVar(&todoNoInteractive, "no-pager", false, "Disable interactive TUI mode")
 	todoListCmd.Flags().BoolVar(&todoNoColor, "no-color", false, "Disable colored output")
 	todoListCmd.Flags().BoolVar(&todoJSON, "json", false, "Output in JSON format")
+	todoListCmd.Flags().StringVar(&todoSortBy, "sort-by", "", "Sort by (priority|date|status)")
+	todoListCmd.Flags().BoolVar(&todoDesc, "desc", false, "Sort in descending order")
+	todoListCmd.Flags().StringVar(&todoFile, "file", "", "Specify the target file (overrides config)")
 
 	todoAddCmd.Flags().StringVar(&todoFile, "file", "", "Specify the target file")
 	todoAddCmd.Flags().StringVar(&todoSchedule, "schedule", "", "Set a SCHEDULED timestamp")
