@@ -140,7 +140,7 @@ func (m *Model) refreshList() {
 		filtered = m.allItems
 	} else {
 		start := m.currentDate
-		end := start
+		var end time.Time
 		switch m.viewRange {
 		case "week":
 			end = start.AddDate(0, 0, 6)
@@ -149,7 +149,6 @@ func (m *Model) refreshList() {
 			start = time.Date(y, mm, 1, 0, 0, 0, 0, start.Location())
 			end = start.AddDate(0, 1, 0)
 		default:
-			// Default to day
 			end = start
 		}
 		filtered = agenda.FilterItemsByRange(m.allItems, start, end)
@@ -314,17 +313,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			case key.Matches(msg, m.keys.ToggleStatus):
 				if i, ok := m.list.SelectedItem().(ListItem); ok {
-					if err := ToggleStatus(i.Item); err != nil {
-						// TODO: Show error
-					}
+					_ = ToggleStatus(i.Item)
 					m.refreshList()
 				}
 				return m, nil
 			case key.Matches(msg, m.keys.CyclePriority):
 				if i, ok := m.list.SelectedItem().(ListItem); ok {
-					if err := CyclePriority(i.Item); err != nil {
-						// TODO: Show error
-					}
+					_ = CyclePriority(i.Item)
 					m.refreshList()
 				}
 				return m, nil
@@ -372,9 +367,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case key.Matches(msg, m.keys.ToggleStatus):
 				// Toggle status of selected item in focused list
 				if i, ok := m.boardLists[m.focusedInt].SelectedItem().(ListItem); ok {
-					if err := ToggleStatus(i.Item); err != nil {
-						// TODO: log error
-					}
+					_ = ToggleStatus(i.Item)
 					m.refreshList()
 				}
 				return m, nil
