@@ -101,7 +101,9 @@ func (s *Server) handleListTodos(ctx context.Context, request mcp.CallToolReques
 		return mcp.NewToolResultError(fmt.Sprintf("Failed to list todos: %v", err)), nil
 	}
 
-	return mcp.NewToolResultJSON(items)
+	return mcp.NewToolResultJSON(map[string]interface{}{
+		"items": items,
+	})
 }
 
 func (s *Server) handleAddTodo(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -190,5 +192,7 @@ func (s *Server) handleGetAgenda(ctx context.Context, request mcp.CallToolReques
 		return mcp.NewToolResultError(fmt.Sprintf("Failed to get agenda: %v", err)), nil
 	}
 
-	return mcp.NewToolResultJSON(items)
+	return mcp.NewToolResultJSON(map[string]interface{}{
+		"items": items,
+	})
 }
