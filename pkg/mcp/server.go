@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/garaemon/org-agenda-cli/pkg/service"
+	"github.com/garaemon/org-agenda-cli/pkg/version"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 )
@@ -17,7 +18,7 @@ type Server struct {
 }
 
 func NewServer(svc *service.Service) *Server {
-	s := server.NewMCPServer("org-agenda-mcp", "0.1.0")
+	s := server.NewMCPServer("org-agenda-mcp", version.Version)
 	return &Server{
 		svc:    svc,
 		server: s,
@@ -85,8 +86,7 @@ func (s *Server) registerTools() {
 func (s *Server) handleListTodos(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	args, ok := request.Params.Arguments.(map[string]interface{})
 	if !ok {
-		// If no arguments provided, it might be nil or empty map?
-		// We can proceed with empty args
+		// Proceed with an empty map if no arguments are provided.
 		args = make(map[string]interface{})
 	}
 

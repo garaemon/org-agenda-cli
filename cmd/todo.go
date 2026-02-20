@@ -211,8 +211,7 @@ var todoAddCmd = &cobra.Command{
 
 		content := fmt.Sprintf("* TODO %s", title)
 		if todoPriority != "" {
-			// Validate priority? Org-mode allows any character, but A-C is standard.
-			// For now, just insert it.
+			// Org-mode accommodates any character for priority, with A-C as standard. Assuming any string is valid.
 			// Format: * TODO [#A] Title
 			content = fmt.Sprintf("* TODO [#%s] %s", todoPriority, title)
 		}
@@ -289,7 +288,7 @@ var todoDoneCmd = &cobra.Command{
 
 		newLine := strings.Replace(targetLine, " "+item.StatusTodo+" ", " "+item.StatusDone+" ", 1)
 
-		// If no change happened, maybe it's because of strict spacing?
+		// If no change occurred, it might be due to strict spacing requirements.
 		if newLine == targetLine {
 			fmt.Printf("Could not find ' %s ' pattern to replace.\n", item.StatusTodo)
 			return

@@ -35,8 +35,6 @@ func (s *Service) ListTodos(opts ListOptions) ([]*item.Item, error) {
 	for _, file := range s.OrgFiles {
 		content, err := os.ReadFile(file)
 		if err != nil {
-			// Skip files that cannot be read, but log/print error?
-			// For now, just continue as per original logic
 			continue
 		}
 
@@ -145,8 +143,7 @@ func (s *Service) MarkDone(fileOrId string) error {
 	targetLine := lines[lineIdx]
 
 	if !strings.Contains(targetLine, item.StatusTodo) {
-		// Try to see if it already is DONE?
-		// Original logic: "Line does not appear to be a TODO item"
+		// Line may already be DONE or is not a task.
 		return fmt.Errorf("line does not appear to be a %s item", item.StatusTodo)
 	}
 
@@ -178,9 +175,7 @@ func (s *Service) GetAgenda(startedAt time.Time, rangeType string) ([]*item.Item
 		// But FilterItemsByRange uses inclusive comparison.
 	}
 
-	// FilterItemsByRange logic seems to handle "day" correctly if start == end?
-	// Let's check agenda.FilterItemsByRange implementation again.
-	// It truncates to day. So start=2023-01-01, end=2023-01-01 covers that day.
+	// FilterItemsByRange handles single-day ranges correctly by truncating to the day.
 
 	var allItems []*item.Item
 	for _, file := range s.OrgFiles {
@@ -193,9 +188,7 @@ func (s *Service) GetAgenda(startedAt time.Time, rangeType string) ([]*item.Item
 		allItems = append(allItems, filtered...)
 	}
 
-	// Sort by date? The original implementation just appends.
-	// Users might appreciate sorting.
-	// For now let's keep it simple and consistent with original behavior.
+	// Keep items in parsing order to maintain consistency with the original implementation.
 
 	return allItems, nil
 }

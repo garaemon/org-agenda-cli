@@ -169,7 +169,7 @@ SCHEDULED: <2023-11-01>
 	}
 
 	// Should include Task 1 (Scheduled today)
-	// Should NOT include Task 2 (Deadline later) unless we are viewing week?
+	// Task 2 (Deadline is later in the week) should not be included.
 	// Task 2 is DEADLINE 2023-10-05.
 	// Task 3 is SCHEDULED 2023-11-01.
 

@@ -19,11 +19,7 @@ var serveCmd = &cobra.Command{
 		defaultFile := viper.GetString("default_file")
 
 		if len(paths) == 0 {
-			// Fallback or warning?
-			// For MCP server, maybe we want to be silent on stdout if possible,
-			// but we are using stdio for transport.
-			// However, logs usually go to stderr.
-			// Let's print to stderr.
+			// Write warnings to stderr to avoid interfering with MCP stdio transport.
 			fmt.Fprintln(os.Stderr, "Warning: No org files configured.")
 		}
 
