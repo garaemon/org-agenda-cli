@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/garaemon/org-agenda-cli/pkg/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -16,7 +17,7 @@ var rootCmd = &cobra.Command{
 	Use:     "org-agenda",
 	Short:   "A CLI tool to manage Org-mode agendas and TODO lists",
 	Long:    `A CLI tool to parse Emacs Org-mode files and manage agendas and TODO lists directly from the terminal.`,
-	Version: "0.0.0",
+	Version: version.Version,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
