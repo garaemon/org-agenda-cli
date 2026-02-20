@@ -86,7 +86,13 @@ var agendaCmd = &cobra.Command{
 		}
 
 		if useTui {
-			err := tui.Run(allItems, start, agendaRange, "")
+			// Sorting defaults to none for agenda view for now, or maybe date?
+			// Agenda view is already sorted by date by nature of display?
+			// Actually FilterItemsByRange doesn't sort.
+			// Let's sort by date by default for Agenda.
+			// But the TUI model does sorting in refreshList.
+			// Let's pass "date" and false (asc).
+			err := tui.Run(allItems, start, agendaRange, "", "date", false)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)

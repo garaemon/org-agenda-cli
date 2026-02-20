@@ -75,3 +75,79 @@ func AdjustDate(date time.Time, rangeType string) time.Time {
 		return d
 	}
 }
+
+func SortItems(items []*item.Item, criteria string, desc bool) {
+	sort.SliceStable(items, func(i, j int) bool {
+		var less bool
+		switch criteria {
+		case "priority":
+			// Priority: A > B > C > ""
+			// We want to sort A, B, C, "" in ascending order of importance?
+			// Usually "sort" implies ascending rank.
+			// But for priority, A is "smaller" char but "higher" priority.
+			// Let's define ascending as A -> B -> C -> None.
+			p1 := items[i].Priority
+			p2 := items[j].Priority
+			if p1 == "" && p2 != "" {
+				less = false // "" is > "A" (in terms of being last)
+			} else if p1 != "" && p2 == "" {
+				less = true // "A" is < ""
+			} else {
+				less = p1 < p2
+			}
+		case "date":
+			// Date: earliest deadline/schedule first.
+			// We prioritize Deadline over Scheduled.
+			t1 := getDate(items[i])
+			t2 := getDate(items[j])
+			if t1 == nil && t2 != nil {
+				less = false
+			} else if t1 != nil && t2 == nil {
+				less = true
+			} else if t1 == nil && t2 == nil {
+				less = items[i].LineNumber < items[j].LineNumber // fallback
+			} else {
+				less = t1.Before(*t2)
+			}
+		case "status":
+			// Status: TODO > WAITING > DONE > ""
+			// Map status to integer
+			s1 := getStatusRank(items[i].Status)
+			s2 := getStatusRank(items[j].Status)
+			less = s1 < s2
+		default:
+			// Default to file order (roughly)
+			// But since we might merge multiple files, maybe just keep existing order?
+			// Stable sort preserves order if we return false?
+			// But let's verify stable sort behavior.
+			// If we return item[i].LineNumber < item[j].LineNumber, it sorts by line.
+			// But if files are different?
+			return i < j // keep original order
+		}
+
+		if desc {
+			return !less
+		}
+		return less
+	})
+}
+
+func getDate(it *item.Item) *time.Time {
+	if it.Deadline != nil {
+		return it.Deadline
+	}
+	return it.Scheduled
+}
+
+func getStatusRank(status string) int {
+	switch status {
+	case item.StatusTodo:
+		return 0
+	case item.StatusWaiting:
+		return 1
+	case item.StatusDone:
+		return 2
+	default:
+		return 3
+	}
+}
