@@ -11,6 +11,20 @@ import (
 )
 
 func TestTodoList(t *testing.T) {
+	// Reset flags
+	todoFile = ""
+	todoStatus = ""
+	todoTag = ""
+	todoPriority = ""
+	todoSchedule = ""
+	todoDeadline = ""
+	todoTags = ""
+	todoNoInteractive = false
+	todoNoColor = false
+	todoJSON = false
+	todoSortBy = ""
+	todoDesc = false
+
 	// Setup temporary org file
 	content := `* TODO Task 1
 * DONE Task 2
@@ -71,6 +85,16 @@ func TestTodoList(t *testing.T) {
 }
 
 func TestTodoAddPriority(t *testing.T) {
+	// Reset flags
+	todoFile = ""
+	todoStatus = ""
+	todoTag = ""
+	todoPriority = ""
+	todoSchedule = ""
+	todoDeadline = ""
+	todoTags = ""
+	// ... (others not strictly needed for Add but safe)
+
 	// Setup temporary org file
 	tmpfile, err := os.CreateTemp("", "test*.org")
 	if err != nil {
@@ -105,6 +129,20 @@ func TestTodoAddPriority(t *testing.T) {
 }
 
 func TestTodoListPriority(t *testing.T) {
+	// Reset flags
+	todoFile = ""
+	todoStatus = ""
+	todoTag = ""
+	todoPriority = ""
+	todoSchedule = ""
+	todoDeadline = ""
+	todoTags = ""
+	todoNoInteractive = false
+	todoNoColor = false
+	todoJSON = false
+	todoSortBy = ""
+	todoDesc = false
+
 	// Setup temporary org file with priorities
 	content := `* TODO [#A] Urgent Task
 * TODO [#B] Normal Task
@@ -170,6 +208,13 @@ func TestTodoListPriority(t *testing.T) {
 }
 
 func TestTodoListNoColor(t *testing.T) {
+	// Reset flags
+	todoFile = ""
+	todoStatus = ""
+	todoJSON = false // Important loop reset
+	todoNoInteractive = false
+	todoNoColor = false
+
 	// Setup temporary org file
 	content := "* TODO [#A] Urgent Task"
 	tmpfile, err := os.CreateTemp("", "test*.org")
@@ -216,6 +261,14 @@ func TestTodoListNoColor(t *testing.T) {
 }
 
 func TestTodoListTags(t *testing.T) {
+	// Reset flags
+	todoFile = ""
+	todoStatus = ""
+	todoJSON = false
+	todoNoInteractive = false
+	todoNoColor = false
+	todoTag = ""
+
 	// Setup temporary org file with tags
 	content := "* TODO Task with Tags :work:urgent:"
 	tmpfile, err := os.CreateTemp("", "test*.org")
@@ -258,6 +311,13 @@ func TestTodoListTags(t *testing.T) {
 }
 
 func TestTodoListJSON(t *testing.T) {
+	// Reset flags
+	todoFile = ""
+	todoStatus = ""
+	todoJSON = false
+	todoNoInteractive = false
+	todoNoColor = false
+
 	// Setup temporary org file
 	content := `* TODO [#A] JSON Task :api:`
 	tmpfile, err := os.CreateTemp("", "test*.org")

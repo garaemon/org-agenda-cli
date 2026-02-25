@@ -22,7 +22,7 @@ func TestNewModel(t *testing.T) {
 			RawContent: "This is the content.",
 		},
 	}
-	m := NewModel(items, now, "day", "")
+	m := NewModel(items, now, "day", "", "", false)
 	// Title format: Agenda: YYYY-MM-DD - YYYY-MM-DD
 	expectedPrefix := "Agenda: "
 	if !strings.HasPrefix(m.list.Title, expectedPrefix) {
@@ -94,7 +94,7 @@ func TestPaging(t *testing.T) {
 	}
 
 	// Initialize with week view
-	m := NewModel(items, now, "week", "")
+	m := NewModel(items, now, "week", "", "", false)
 
 	// Initially, only Item 1 should be visible
 	if len(m.list.Items()) != 1 {
@@ -149,7 +149,7 @@ func TestPagingMonth(t *testing.T) {
 	}
 
 	// Initialize with month view
-	m := NewModel(items, now, "month", "")
+	m := NewModel(items, now, "month", "", "", false)
 
 	// Initially, only Item 1 should be visible
 	if len(m.list.Items()) != 1 {
