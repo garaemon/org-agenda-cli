@@ -7,6 +7,15 @@ import (
 	"github.com/garaemon/org-agenda-cli/pkg/item"
 )
 
+type SortBy string
+
+const (
+	SortByNone     SortBy = ""
+	SortByPriority SortBy = "priority"
+	SortByDate     SortBy = "date"
+	SortByStatus   SortBy = "status"
+)
+
 // FilterItemsByRange returns items that have a schedule or deadline within the range [start, end].
 func FilterItemsByRange(items []*item.Item, start, end time.Time) []*item.Item {
 	var filtered []*item.Item
@@ -76,11 +85,11 @@ func AdjustDate(date time.Time, rangeType string) time.Time {
 	}
 }
 
-func SortItems(items []*item.Item, criteria string, desc bool) {
+func SortItems(items []*item.Item, criteria SortBy, desc bool) {
 	sort.SliceStable(items, func(i, j int) bool {
 		var less bool
 		switch criteria {
-		case "priority":
+		case SortByPriority:
 			// Priority: A > B > C > ""
 			// We want to sort A, B, C, "" in ascending order of importance?
 			// Usually "sort" implies ascending rank.
@@ -95,7 +104,7 @@ func SortItems(items []*item.Item, criteria string, desc bool) {
 			} else {
 				less = p1 < p2
 			}
-		case "date":
+		case SortByDate:
 			// Date: earliest deadline/schedule first.
 			// We prioritize Deadline over Scheduled.
 			t1 := getDate(items[i])
@@ -109,7 +118,7 @@ func SortItems(items []*item.Item, criteria string, desc bool) {
 			} else {
 				less = t1.Before(*t2)
 			}
-		case "status":
+		case SortByStatus:
 			// Status: TODO > WAITING > DONE > ""
 			// Map status to integer
 			s1 := getStatusRank(items[i].Status)

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/garaemon/org-agenda-cli/pkg/agenda"
 	"github.com/garaemon/org-agenda-cli/pkg/item"
 )
 
@@ -16,7 +17,7 @@ func TestSorting(t *testing.T) {
 		{Title: "B", Priority: "B"}, // Priority B
 	}
 	// Initial: default order (file order: A, C, B)
-	m := NewModel(items, now, "", "Test", "", false)
+	m := NewModel(items, now, "", "Test", agenda.SortByNone, false)
 
 	// file order check: A, C, B
 	if m.list.Items()[0].(ListItem).Item.Title != "A" {
@@ -33,7 +34,7 @@ func TestSorting(t *testing.T) {
 	updatedModel, _ := m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'S'}})
 	m = updatedModel.(Model)
 
-	if m.sortBy != "priority" {
+	if m.sortBy != agenda.SortByPriority {
 		t.Errorf("Expected sortBy 'priority', got '%s'", m.sortBy)
 	}
 	if m.list.Items()[0].(ListItem).Item.Title != "A" {
@@ -63,7 +64,7 @@ func TestSorting(t *testing.T) {
 	// Press 'S' again -> Date
 	updatedModel, _ = m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'S'}})
 	m = updatedModel.(Model)
-	if m.sortBy != "date" {
+	if m.sortBy != agenda.SortByDate {
 		t.Errorf("Expected sortBy 'date', got '%s'", m.sortBy)
 	}
 }

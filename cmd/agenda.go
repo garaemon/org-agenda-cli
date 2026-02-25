@@ -92,7 +92,7 @@ var agendaCmd = &cobra.Command{
 			// Let's sort by date by default for Agenda.
 			// But the TUI model does sorting in refreshList.
 			// Let's pass "date" and false (asc).
-			err := tui.Run(allItems, start, agendaRange, "", "date", false)
+			err := tui.Run(allItems, start, agendaRange, "", agenda.SortByDate, false)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)

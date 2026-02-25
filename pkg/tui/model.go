@@ -63,6 +63,13 @@ func (i ListItem) FilterValue() string {
 	return i.Item.Title
 }
 
+type InputMode string
+
+const (
+	InputModeSchedule InputMode = "schedule"
+	InputModeDeadline InputMode = "deadline"
+)
+
 type Model struct {
 	list        list.Model
 	viewport    viewport.Model
@@ -71,10 +78,10 @@ type Model struct {
 	currentDate time.Time
 	viewRange   string
 	title       string
-	sortBy      string
+	sortBy      agenda.SortBy
 	sortDesc    bool
 	textInput   textinput.Model
-	inputMode   string // "schedule" or "deadline"
+	inputMode   InputMode // "schedule" or "deadline"
 	viewMode    ViewMode
 	width       int
 	height      int
@@ -83,7 +90,7 @@ type Model struct {
 	keys        KeyMap
 }
 
-func NewModel(items []*item.Item, start time.Time, viewRange string, title string, sortBy string, sortDesc bool) Model {
+func NewModel(items []*item.Item, start time.Time, viewRange string, title string, sortBy agenda.SortBy, sortDesc bool) Model {
 
 	ti := textinput.New()
 	ti.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("63"))
@@ -104,14 +111,14 @@ func NewModel(items []*item.Item, start time.Time, viewRange string, title strin
 		keys:        NewKeyMap(),
 	}
 	// Initialize list with empty items, will be populated by refreshList
-	l := list.New([]list.Item{}, list.NewDefaultDelegate(), 0, 0)
-	l.AdditionalShortHelpKeys = func() []key.Binding {
+	listModel := list.New([]list.Item{}, list.NewDefaultDelegate(), 0, 0)
+	listModel.AdditionalShortHelpKeys = func() []key.Binding {
 		return m.keys.ShortHelp()
 	}
-	l.AdditionalFullHelpKeys = func() []key.Binding {
+	listModel.AdditionalFullHelpKeys = func() []key.Binding {
 		return m.keys.FullHelp()
 	}
-	m.list = l
+	m.list = listModel
 
 	// Initialize board lists
 	for i := 0; i < 3; i++ {
@@ -296,14 +303,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case key.Matches(msg, m.keys.Sort):
 				// Cycle sort criteria: file -> priority -> date -> status -> file
 				switch m.sortBy {
-				case "":
-					m.sortBy = "priority"
-				case "priority":
-					m.sortBy = "date"
-				case "date":
-					m.sortBy = "status"
-				case "status":
-					m.sortBy = ""
+				case agenda.SortByNone:
+					m.sortBy = agenda.SortByPriority
+				case agenda.SortByPriority:
+					m.sortBy = agenda.SortByDate
+				case agenda.SortByDate:
+					m.sortBy = agenda.SortByStatus
+				case agenda.SortByStatus:
+					m.sortBy = agenda.SortByNone
 				}
 				m.refreshList()
 				return m, nil
@@ -324,14 +331,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				return m, nil
 			case key.Matches(msg, m.keys.Schedule):
-				m.inputMode = "SCHEDULED"
+				m.inputMode = InputModeSchedule
 				m.textInput.Placeholder = "YYYY-MM-DD"
 				m.textInput.SetValue("")
 				m.textInput.Focus()
 				m.state = inputView
 				return m, nil
 			case key.Matches(msg, m.keys.Deadline):
-				m.inputMode = "DEADLINE"
+				m.inputMode = InputModeDeadline
 				m.textInput.Placeholder = "YYYY-MM-DD"
 				m.textInput.SetValue("")
 				m.textInput.Focus()
@@ -409,7 +416,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case tea.KeyEnter:
 				val := m.textInput.Value()
 				if i, ok := m.list.SelectedItem().(ListItem); ok {
-					if err := UpdateTimestamp(i.Item, m.inputMode, val); err != nil {
+					var mode string
+					if m.inputMode == InputModeSchedule {
+						mode = "SCHEDULED"
+					} else {
+						mode = "DEADLINE"
+					}
+					if err := UpdateTimestamp(i.Item, mode, val); err != nil {
 						// Stay in input view and maybe show error?
 						// For now just logging to console or ignoring is bad UX but acceptable for Phase 1 MVP
 						// Ideally textInput could show error style.

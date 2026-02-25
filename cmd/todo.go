@@ -105,7 +105,7 @@ var todoListCmd = &cobra.Command{
 		}
 
 		if todoSortBy != "" {
-			agenda.SortItems(allItems, todoSortBy, todoDesc)
+			agenda.SortItems(allItems, agenda.SortBy(todoSortBy), todoDesc)
 		}
 
 		if todoJSON {
@@ -121,7 +121,7 @@ var todoListCmd = &cobra.Command{
 		useTui := !todoNoInteractive
 
 		if useTui {
-			if err := tui.Run(allItems, time.Time{}, "", "Todo List", todoSortBy, todoDesc); err != nil {
+			if err := tui.Run(allItems, time.Time{}, "", "Todo List", agenda.SortBy(todoSortBy), todoDesc); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}

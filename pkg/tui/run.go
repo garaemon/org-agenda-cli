@@ -6,10 +6,11 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/garaemon/org-agenda-cli/pkg/agenda"
 	"github.com/garaemon/org-agenda-cli/pkg/item"
 )
 
-func Run(items []*item.Item, start time.Time, viewRange string, title string, sortBy string, sortDesc bool) error {
+func Run(items []*item.Item, start time.Time, viewRange string, title string, sortBy agenda.SortBy, sortDesc bool) error {
 	m := NewModel(items, start, viewRange, title, sortBy, sortDesc)
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
